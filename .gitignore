@@ -1,0 +1,16 @@
+# Local Python environment
+.venv/
+
+# Python-generated files
+_pycache_/
+*.py[cod]
+
+# Generated dashboard output
+build/
+
+# Test and coverage artifacts
+.coverage
+htmlcov/
+
+# macOS metadata
+.DS_Store

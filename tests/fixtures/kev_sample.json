@@ -1,0 +1,103 @@
+{
+  "catalogVersion": "Testing-1.0",
+  "dateReleased": "2026-09-03T12:00:00Z",
+  "count": 6,
+  "vulnerabilities": [
+    {
+      "cveID": "CVE-2099-0001",
+      "vendorProject": "Northstar Software",
+      "product": "Gateway",
+      "vulnerabilityName": "Synthetic Gateway Improper Authentication Vulnerability",
+      "dateAdded": "2026-09-01",
+      "shortDescription": "A fictional authentication weakness created for software testing.",
+      "requiredAction": "Apply the fictional vendor update and verify remediation.",
+      "dueDate": "2026-09-04",
+      "knownRansomwareCampaignUse": "Known",
+      "forensicTriage": "Yes",
+      "notes": "Synthetic fixture record. Not real threat intelligence.",
+      "cwes": [
+        "CWE-287"
+      ]
+    },
+    {
+      "cveID": "CVE-2099-0002",
+      "vendorProject": "Blue Meadow",
+      "product": "FileBridge",
+      "vulnerabilityName": "Synthetic FileBridge Path Traversal Vulnerability",
+      "dateAdded": "2026-08-25",
+      "shortDescription": "A fictional path traversal weakness created for software testing.",
+      "requiredAction": "Apply the fictional vendor update and verify remediation.",
+      "dueDate": "2026-09-08",
+      "knownRansomwareCampaignUse": "Unknown",
+      "forensicTriage": "No",
+      "notes": "Synthetic fixture record. Not real threat intelligence.",
+      "cwes": [
+        "CWE-22"
+      ]
+    },
+    {
+      "cveID": "CVE-2099-0003",
+      "vendorProject": "Cedar Systems",
+      "product": "Admin Portal",
+      "vulnerabilityName": "Synthetic Admin Portal Command Injection Vulnerability",
+      "dateAdded": "2026-08-10",
+      "shortDescription": "A fictional command injection weakness created for software testing.",
+      "requiredAction": "Apply the fictional vendor update and verify remediation.",
+      "dueDate": "2026-08-31",
+      "knownRansomwareCampaignUse": "Unknown",
+      "forensicTriage": "Yes",
+      "notes": "Synthetic fixture record. Not real threat intelligence.",
+      "cwes": [
+        "CWE-78"
+      ]
+    },
+    {
+      "cveID": "CVE-2099-0004",
+      "vendorProject": "Northstar Software",
+      "product": "Endpoint Console",
+      "vulnerabilityName": "Synthetic Endpoint Console Deserialization Vulnerability",
+      "dateAdded": "2025-12-01",
+      "shortDescription": "A fictional deserialization weakness created for software testing.",
+      "requiredAction": "Apply the fictional vendor update and verify remediation.",
+      "dueDate": "2025-12-31",
+      "knownRansomwareCampaignUse": "Known",
+      "forensicTriage": "No",
+      "notes": "Synthetic fixture record. Not real threat intelligence.",
+      "cwes": [
+        "CWE-502"
+      ]
+    },
+    {
+      "cveID": "CVE-2099-0005",
+      "vendorProject": "Harbor Tech",
+      "product": "Backup Manager",
+      "vulnerabilityName": "Synthetic Backup Manager SQL Injection Vulnerability",
+      "dateAdded": "2024-06-01",
+      "shortDescription": "A fictional SQL injection weakness created for software testing.",
+      "requiredAction": "Apply the fictional vendor update and verify remediation.",
+      "dueDate": "2024-07-16",
+      "knownRansomwareCampaignUse": "Unknown",
+      "forensicTriage": "No",
+      "notes": "Synthetic fixture record. Not real threat intelligence.",
+      "cwes": [
+        "CWE-89"
+      ]
+    },
+    {
+      "cveID": "CVE-2099-0006",
+      "vendorProject": "Blue Meadow",
+      "product": "Remote Assist",
+      "vulnerabilityName": "Synthetic Remote Assist Cross-Site Scripting Vulnerability",
+      "dateAdded": "2023-01-15",
+      "shortDescription": "A fictional cross-site scripting weakness created for software testing.",
+      "requiredAction": "Apply the fictional vendor update and verify remediation.",
+      "dueDate": "2023-04-15",
+      "knownRansomwareCampaignUse": "Unknown",
+      "forensicTriage": "No",
+      "notes": "Synthetic fixture record. Not real threat intelligence.",
+      "cwes": [
+        "CWE-79"
+      ]
+    }
+  ]
+}
