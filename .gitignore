@@ -2,7 +2,7 @@
 .venv/
 
 # Python-generated files
-_pycache_/
+_pycache__/
 *.py[cod]
 
 # Generated dashboard output
@@ -11,6 +11,12 @@ build/
 # Test and coverage artifacts
 .coverage
 htmlcov/
+.pytest_cache/
 
 # macOS metadata
 .DS_Store
+
+# Local editor and assistant settings
+.vscode/
+.github/copilot-instructions.md
+.github/instructions/

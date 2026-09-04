@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cisa-kev-prioritization-dashboard"
+dynamic = ["version"]
+description = "A reproducible Python dashboard for analyzing the CISA Known Exploited Vulnerabilities catalog."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+  { name = "Andrew Edwards" }
+]
+keywords = [
+  "cybersecurity",
+  "cisa",
+  "kev",
+  "vulnerability-management",
+  "python"
+]
+classifiers = [
+  "Environment :: Console",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Security"
+]
+dependencies = []
+
+[project.scripts]
+kev-dashboard = "kev_dashboard.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "kev_dashboard.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["kev_dashboard*"]
