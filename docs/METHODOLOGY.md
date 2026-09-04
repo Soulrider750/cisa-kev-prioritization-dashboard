@@ -70,3 +70,26 @@ Current federal remediation guidance should be interpreted using CISA's BOD
 26-04 and its implementation guidance:
 
 https://www.cisa.gov/news-events/directives/bod-26-04-prioritizing-security-updates-based-risk
+
+## Reproducibility and exported evidence
+
+Each build preserves the exact source JSON bytes used for analysis. It also
+records:
+
+- the source location;
+- retrieval timestamp;
+- catalog version;
+- catalog release timestamp;
+- analysis date;
+- record count; and
+- SHA-256 snapshot digest.
+
+The SHA-256 digest allows a reviewer to confirm that a saved snapshot has not
+changed after analysis.
+
+Summary JSON excludes vulnerability-level rows to keep the aggregate report
+compact. Complete normalized records are exported separately as CSV.
+
+Text beginning with spreadsheet formula characters is neutralized in CSV
+output. This reduces the risk that externally supplied text will be interpreted
+as a formula when a report is opened in spreadsheet software.

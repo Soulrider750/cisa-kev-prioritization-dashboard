@@ -14,20 +14,25 @@ The dashboard will not claim to calculate an organization's actual risk. Asset o
 
 ## Current stage
 
-Stage 4 implements:
+Stage 5 implements:
 
 - validated catalog and vulnerability models;
-- secure local and live data ingestion;
-- vendor and yearly catalog summaries;
-- ransomware and forensic-triage distributions;
-- remediation-window statistics;
-- reproducible `as_of` date analysis; and
-- a transparent, deterministic review queue.
+- secure local and live JSON ingestion;
+- deterministic catalog analysis;
+- exact source-snapshot preservation;
+- SHA-256 provenance metadata;
+- aggregate summary JSON;
+- normalized vulnerability CSV output;
+- vendor, year, ransomware, forensic-triage, remediation-window, and review
+  summary CSV files;
+- spreadsheet-formula neutralization; and
+- atomic output replacement.
 
-Analysis is deliberately separated from file, network, and presentation code.
-The output is currently available as Python dictionaries. CSV, JSON, and HTML report generation have not been implemented yet.
+The project currently generates machine-readable evidence. The HTML dashboard
+and final command-line workflow have not been implemented yet.
 
-see `docs/METHODOLOGY.md` for definitions and interpretation limits.
+See `docs/METHODOLOGY.md` for definitions, limitations, and reproducibility
+details.
 
 
 ## Official data source
