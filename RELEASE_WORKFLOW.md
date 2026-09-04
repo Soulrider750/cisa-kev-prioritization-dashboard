@@ -6,42 +6,42 @@ the project.
 
 ## 1. Technical verification
 
-- [ ] Run `python3 --version` and confirm Python 3.11 or later.
-- [ ] Run `make test`.
-- [ ] Run `make verify`.
-- [ ] Run `git diff --check`.
-- [ ] Confirm `git ls-files build` produces no output.
-- [ ] Confirm no virtual environment, cache, or compiled Python files are tracked.
-- [ ] Review every failure instead of bypassing the verifier.
+- [x] Run `python3 --version` and confirm Python 3.11 or later.
+- [x] Run `make test`.
+- [x] Run `make verify`.
+- [x] Run `git diff --check`.
+- [x] Confirm `git ls-files build` produces no output.
+- [x] Confirm no virtual environment, cache, or compiled Python files are tracked.
+- [x] Review every failure instead of bypassing the verifier.
 
 ## 2. Visual verification
 
-- [ ] Run `make sample`.
-- [ ] Open `build/sample/index.html`.
-- [ ] Inspect the report at desktop width.
-- [ ] Inspect the report at narrow mobile width.
-- [ ] Confirm headings, charts, tables, links, and expandable data are readable.
-- [ ] Confirm the report loads without external scripts, fonts, or stylesheets.
+- [x] Run `make sample`.
+- [x] Open `build/sample/index.html`.
+- [x] Inspect the report at desktop width.
+- [x] Inspect the report at narrow mobile width.
+- [x] Confirm headings, charts, tables, links, and expandable data are readable.
+- [x] Confirm the report loads without external scripts, fonts, or stylesheets.
 
 ## 3. Live-data verification
 
-- [ ] Run `make live` separately from the offline gate.
-- [ ] Confirm the source is the approved CISA HTTPS feed.
-- [ ] Confirm the downloaded record count agrees with the generated metadata.
-- [ ] Confirm the snapshot SHA-256 value is present.
-- [ ] Avoid writing current catalog counts into permanent documentation.
+- [x] Run `make live` separately from the offline gate.
+- [x] Confirm the source is the approved CISA HTTPS feed.
+- [x] Confirm the downloaded record count agrees with the generated metadata.
+- [x] Confirm the snapshot SHA-256 value is present.
+- [x] Avoid writing current catalog counts into permanent documentation.
 
 Live-data results change over time and must not be used as deterministic test
 expectations.
 
 ## 4. Privacy and content review
 
-- [ ] Search tracked files for credentials, tokens, private keys, and passwords.
-- [ ] Search for personal filesystem paths and unintended email addresses.
-- [ ] Confirm all fixture records remain obviously synthetic.
-- [ ] Confirm no raw coursework, private source map, or third-party submission is included.
-- [ ] Confirm claims in the README match implemented and tested behavior.
-- [ ] Confirm CISA is identified as the data source without implying endorsement.
+- [x] Search tracked files for credentials, tokens, private keys, and passwords.
+- [x] Search for personal filesystem paths and unintended email addresses.
+- [x] Confirm all fixture records remain obviously synthetic.
+- [x] Confirm no raw coursework, private source map, or third-party submission is included.
+- [x] Confirm claims in the README match implemented and tested behavior.
+- [x] Confirm CISA is identified as the data source without implying endorsement.
 
 ## 5. Git identity review
 
