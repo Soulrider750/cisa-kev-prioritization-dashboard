@@ -11,27 +11,58 @@ The finished project will transform CISA KEV data into a reproducible, auditable
 
 The dashboard will not claim to calculate an organization's actual risk. Asset ownership, exposure, business impact, compensating controls, and local threat intelligence are required for an organization-specific prioritization.
 
-
 ## Current stage
 
-Stage 6 implements the complete offline reporting pipeline:
+Stage 7 implements the complete command-line workflow:
 
-- validated KEV data models;
-- secure local and live JSON ingestion;
-- deterministic metrics and review signals;
-- exact source-snapshot preservation;
-- JSON and CSV evidence exports;
-- a responsive self-contained HTML dashboard;
-- accessible inline SVG charts and text-equivalent data tables;
-- an operational review queue;
-- HTML escaping and spreadsheet-formula protection; and
-- atomic output replacement.
+- secure local or live CISA ingestion;
+- strict validation and normalization;
+- deterministic analysis;
+- auditable snapshot, JSON, and CSV exports;
+- responsive self-contained HTML reporting;
+- configurable analysis and display options;
+- concise success and failure messages; and
+- offline end-to-end command-line tests.
 
-The pipeline can currently be run through its Python functions. The final
-command-line interface has not yet connected all stages into one command.
 
-See `docs/METHODOLOGY.md` for definitions, accessibility decisions, and
-interpretation limits.
+## Quick start
+
+Requires Python 3.11 or later. The application uses only Python's standard
+library.
+
+### Run the offline demonstration
+
+The included fixture is synthetic and is intended only for repeatable testing:
+
+```bash
+python -m kev_dashboard \
+  --input tests/fixtures/kev_sample.json \
+  --as-of 2026-09-03 \
+  --output-dir build/sample
+```
+Open `build/sample/index.html` in a browser.
+
+## Build from current CISA data
+
+```bash
+python -m kev_dashboard \
+  --output-dir build/live
+```
+The live command retrieves CISA's official KEV JSON feed, validates it, records its SHA-256 digest, exports normalized data, and generates a self-contained HTML dashboard.
+
+## Command option
+
+```bash
+python -m kev_dashboard --help
+```
+important options include:
+- `--input`: use a local catalog snapshot;
+- `--source-url`: use an approved CISA HTTPS location;
+- `-output-dir`: choose the build destinaton;
+- `--as-of`: control the analysis date;
+- `--top-vendors`: control the vendor chart size;
+- `--queue-limit`: control visible queue rows;and
+- `--timeout`: control the retrieval timeout.
 
 
 ## Official data source

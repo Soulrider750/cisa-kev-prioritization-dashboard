@@ -110,3 +110,16 @@ are rendered as non-clickable code.
 The review table displays one primary signal and all applicable review reasons.
 Its ordering remains a workflow aid rather than an organization-specific risk
 assessment.
+
+## Command-line workflow
+
+The command-line interface selects either a local JSON snapshot or CISA's
+approved HTTPS source. These source options are mutually exclusive.
+
+Invalid arguments, loading failures, and catalog-validation failures return a
+nonzero exit status and a concise error rather than generating a traceback for
+normal user errors.
+
+The command does not automatically open a browser, publish files, or send data
+to another service. Generated artifacts remain local until the repository owner
+deliberately reviews and publishes them.
