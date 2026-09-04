@@ -61,4 +61,4 @@ not alter author information already stored in repository history.
 - [x] Obtain explicit approval from the repository owner.
 - [x] Create or connect a remote only after approval.
 - [x] Push only the reviewed commit history.
-- [ ] Verify the public repository immediately after publication.
+- [x] Verify the public repository immediately after publication.
