@@ -14,16 +14,28 @@ The dashboard will not claim to calculate an organization's actual risk. Asset o
 
 ## Current stage
 
-Stage 2 implements:
+Stage 3 implements:
 
 - immutable catalog and vulnerability models;
-- normalization of external JSON field names;
-- CVE, date, category, count, and duplicate validation;
-- optional forensic-triage and CWE handling; and
-- derived remediation-window calculations.
+- strict KEV validation and normalization;
+- bounded local JSON loading;
+- approved-host HTTPS retrieval;
+- redirect-destination validation;
+- network timeout and response-time controls; and
+- source timestamps and SHA-256 snapshot fingerprints.
 
-The application currently only operates on the synthetic offline fixture.
-Live CISA retrieval and dashboard generation have not been implemented yet.
+Automated tests use only synthetic local data. Live CISA retrieval is performed separately so changing catalog contents or temporary network failures cannot make the test site unreliable.
+
+Dashboard analysis and report generation have not been implemented yet.
+
+
+## Official data source
+
+Live data comes from CISA's public Known Exploited Vulnerabilities JSON feed:
+
+https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+
+The project preserves the downloaded bytes, retrieval timestamp, source URL, and SHA-256 hash so generated results can be traced to a specific snapshot.
 
 
 

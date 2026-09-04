@@ -7,7 +7,7 @@ def main() -> None:
     """Display the current build status."""
 
     print(f"CISA KEV Dashboard build v{__version__}")
-    print("Stage 2 complete: data models and validation are working.")
+    print("Stage 3 complete: secure local and remote loading are working")
 
 
 if __name__ == "__main__":
