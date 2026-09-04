@@ -71,7 +71,7 @@ def _atomic_write_bytes(
             temporary_path.unlink()
 
 
-def _atomic_write_text(
+def atomic_write_text(
     path: Path,
     text: str,
 ) -> None:
@@ -251,12 +251,12 @@ def export_build(
         document.raw_bytes,
     )
 
-    _atomic_write_text(
+    atomic_write_text(
         metadata_path,
         _json_text(export_metadata),
     )
 
-    _atomic_write_text(
+    atomic_write_text(
         summary_path,
         _json_text(summary),
     )
@@ -306,7 +306,7 @@ def export_build(
     ]
 
     for path, rows, fieldnames in csv_exports:
-        _atomic_write_text(
+        atomic_write_text(
             path,
             _csv_text(rows, fieldnames),
         )

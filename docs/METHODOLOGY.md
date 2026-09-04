@@ -93,3 +93,20 @@ compact. Complete normalized records are exported separately as CSV.
 Text beginning with spreadsheet formula characters is neutralized in CSV
 output. This reduces the risk that externally supplied text will be interpreted
 as a formula when a report is opened in spreadsheet software.
+
+## HTML report
+
+The dashboard is generated as a self-contained HTML document containing inline
+CSS and SVG charts. It does not load JavaScript, stylesheets, fonts, images,
+analytics, or chart libraries from external services.
+
+Every SVG chart includes an accessible title and description. The exact values
+are also available through a collapsible HTML data table.
+
+Externally supplied values are HTML-escaped before they are inserted into the
+report. HTTPS source locations may be displayed as links; local source paths
+are rendered as non-clickable code.
+
+The review table displays one primary signal and all applicable review reasons.
+Its ordering remains a workflow aid rather than an organization-specific risk
+assessment.

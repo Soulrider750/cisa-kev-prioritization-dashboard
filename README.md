@@ -14,25 +14,24 @@ The dashboard will not claim to calculate an organization's actual risk. Asset o
 
 ## Current stage
 
-Stage 5 implements:
+Stage 6 implements the complete offline reporting pipeline:
 
-- validated catalog and vulnerability models;
+- validated KEV data models;
 - secure local and live JSON ingestion;
-- deterministic catalog analysis;
+- deterministic metrics and review signals;
 - exact source-snapshot preservation;
-- SHA-256 provenance metadata;
-- aggregate summary JSON;
-- normalized vulnerability CSV output;
-- vendor, year, ransomware, forensic-triage, remediation-window, and review
-  summary CSV files;
-- spreadsheet-formula neutralization; and
+- JSON and CSV evidence exports;
+- a responsive self-contained HTML dashboard;
+- accessible inline SVG charts and text-equivalent data tables;
+- an operational review queue;
+- HTML escaping and spreadsheet-formula protection; and
 - atomic output replacement.
 
-The project currently generates machine-readable evidence. The HTML dashboard
-and final command-line workflow have not been implemented yet.
+The pipeline can currently be run through its Python functions. The final
+command-line interface has not yet connected all stages into one command.
 
-See `docs/METHODOLOGY.md` for definitions, limitations, and reproducibility
-details.
+See `docs/METHODOLOGY.md` for definitions, accessibility decisions, and
+interpretation limits.
 
 
 ## Official data source
