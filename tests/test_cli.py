@@ -11,6 +11,7 @@ from tempfile import TemporaryDirectory
 import unittest
 from unittest.mock import patch
 
+from kev_dashboard import __version__
 from kev_dashboard.cli import main
 from kev_dashboard.fetch import (
     DEFAULT_FEED_URL,
@@ -297,7 +298,7 @@ class CliTests(unittest.TestCase):
         self.assertEqual(stderr, "")
         self.assertEqual(
             stdout.strip(),
-            "python -m kev_dashboard 0.7.0",
+            f"python -m kev_dashboard {__version__}",
         )
 
     def test_help_describes_the_workflow(self) -> None:

@@ -23,3 +23,4 @@ live:
 
 verify:
 	$(PYTHON) tools/verify_project.py
+	
