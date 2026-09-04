@@ -330,17 +330,39 @@ def check_repository_hygiene(
                 f"README is missing required text: {term}",
             )
 
-    publishing_text = (
-        ROOT / "PUBLISHING_STATUS.md"
-    ).read_text(
-        encoding="utf-8"
-    ).casefold()
+publishing_text = (
+    ROOT / "PUBLISHING_STATUS.md"
+).read_text(
+    encoding="utf-8"
+)
 
-    if "status: not published" not in publishing_text:
-        record_failure(
-            failures,
-            "publishing status must remain NOT PUBLISHED",
-        )
+status_lines = [
+    line.strip().casefold()
+    for line in publishing_text.splitlines()
+    if line.strip().casefold().startswith(
+        "status:"
+    )
+]
+
+allowed_statuses = {
+    "status: not published",
+    "status: ready for publication",
+    "status: published",
+}
+
+if len(status_lines) != 1:
+    record_failure(
+        failures,
+        (
+            "publishing status must contain exactly "
+            "one Status line"
+        ),
+    )
+elif status_lines[0] not in allowed_statuses:
+    record_failure(
+        failures,
+        "publishing status is not recognized",
+    )
 
     if len(failures) == starting_count:
         print("PASS: repository hygiene checks passed")
