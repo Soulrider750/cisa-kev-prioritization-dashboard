@@ -6,9 +6,8 @@ Published: 2026-09-04
 
 Last reviewed: 2026-09-04
 
-The repository owner approved public publication on 2026-09-04. The private
-release candidate must complete its final CI run before repository visibility
-is changed.
+The repository was published on 2026-09-04 after the release candidate passed
+local verification and GitHub CI across Python 3.11 through 3.14.
 
 ## Required gates
 

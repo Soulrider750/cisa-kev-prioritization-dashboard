@@ -141,7 +141,9 @@ Review [SECURITY.md](SECURITY.md) before reporting a security concern or process
 
 ## Publication status
 
-The repository remains unpublished until every gate in [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md) and [RELEASE_WORKFLOW.md](RELEASE_WORKFLOW.md) has been reviewed.
+Version 0.8.0 is publicly released. Release evidence and continuing safeguards
+are recorded in [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md) and
+[RELEASE_WORKFLOW.md](RELEASE_WORKFLOW.md).
 
 ## License
 
