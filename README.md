@@ -2,7 +2,8 @@
 
 A dependency-free Python application that retrieves, validates, analyzes, and visualizes the Cybersecurity and Infrastructure Security Agency's Known Exploited Vulnerabilities catalog.
 
-**Project status:** Version 0.8.0 private release candidate. Automated verification runs on Python 3.11 through 3.14. Public release remains pending final approval.
+**Project status:** Version 0.8.0 is approved and ready for public publication.
+Automated verification passes on Python 3.11 through 3.14.
 
 ## Purpose
 

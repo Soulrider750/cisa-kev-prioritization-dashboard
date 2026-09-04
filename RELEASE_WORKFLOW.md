@@ -45,20 +45,20 @@ expectations.
 
 ## 5. Git identity review
 
-- [ ] Review the configured Git author name.
-- [ ] Review the configured Git author email.
-- [ ] Review author information in every existing commit.
-- [ ] Decide whether any existing history must be rewritten before publication.
-- [ ] Make a recoverable backup before any approved history rewrite.
+- [x] Review the configured Git author name.
+- [x] Review the configured Git author email.
+- [x] Review author information in every existing commit.
+- [x] Decide whether any existing history must be rewritten before publication.
+- [x] Make a recoverable backup before any approved history rewrite.
 
 Changing the current Git configuration affects future commits only. It does
 not alter author information already stored in repository history.
 
 ## 6. Publication decision
 
-- [ ] Review the complete staged diff.
-- [ ] Update `PUBLISHING_STATUS.md`.
-- [ ] Obtain explicit approval from the repository owner.
-- [ ] Create or connect a remote only after approval.
-- [ ] Push only the reviewed commit history.
+- [x] Review the complete staged diff.
+- [x] Update `PUBLISHING_STATUS.md`.
+- [x] Obtain explicit approval from the repository owner.
+- [x] Create or connect a remote only after approval.
+- [x] Push only the reviewed commit history.
 - [ ] Verify the public repository immediately after publication.
