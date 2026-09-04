@@ -6,7 +6,7 @@ A learning-focused Python project that will retrieve, validate, analyze, and vis
 ## Project objective
 
 
-The finished project will transform CISA KEV data into a reproducable, auditable dashboard containing catalog trends and transparent vulnerability review signals.
+The finished project will transform CISA KEV data into a reproducible, auditable dashboard containing catalog trends and transparent vulnerability review signals.
 
 
 The dashboard will not claim to calculate an organization's actual risk. Asset ownership, exposure, business impact, compensating controls, and local threat intelligence are required for an organization-specific prioritization.
@@ -14,16 +14,18 @@ The dashboard will not claim to calculate an organization's actual risk. Asset o
 
 ## Current stage
 
-Stage 1 establishes:
+Stage 2 implements:
+
+- immutable catalog and vulnerability models;
+- normalization of external JSON field names;
+- CVE, date, category, count, and duplicate validation;
+- optional forensic-triage and CWE handling; and
+- derived remediation-window calculations.
+
+The application currently only operates on the synthetic offline fixture.
+Live CISA retrieval and dashboard generation have not been implemented yet.
 
 
-- the Python package structure;
-- an offline synthetic KEV fixture;
-- the initial automated tests; and
-- the command used to run the roject.
-
-
-No live CISA data is used during this stage.
 
 
 ## Data notice
