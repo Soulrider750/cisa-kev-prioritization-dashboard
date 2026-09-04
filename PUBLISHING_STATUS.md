@@ -1,6 +1,8 @@
 # Publishing status
 
-Status: READY FOR PUBLICATION
+Status: PUBLISHED
+
+Published: 2026-09-04
 
 Last reviewed: 2026-09-04
 
@@ -20,10 +22,10 @@ is changed.
 - [x] Commit names and email addresses are acceptable for public display.
 - [x] The repository owner has explicitly approved publication.
 
-## Current restrictions
+## Continuing safeguards
 
-- Keep the repository private until this readiness change passes CI.
-- Do not create the `v0.8.0` tag or release before public verification.
-- Do not enable GitHub Pages or another deployment.
 - Do not publish `SOURCE_MAP_PRIVATE.md`.
 - Keep synthetic records clearly labeled as fictional test data.
+- Review every generated artifact before sharing it.
+- Treat deployment or GitHub Pages as a separate reviewed change.
+- Run the offline verification gate before every release.
