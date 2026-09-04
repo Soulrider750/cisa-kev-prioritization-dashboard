@@ -14,19 +14,20 @@ The dashboard will not claim to calculate an organization's actual risk. Asset o
 
 ## Current stage
 
-Stage 3 implements:
+Stage 4 implements:
 
-- immutable catalog and vulnerability models;
-- strict KEV validation and normalization;
-- bounded local JSON loading;
-- approved-host HTTPS retrieval;
-- redirect-destination validation;
-- network timeout and response-time controls; and
-- source timestamps and SHA-256 snapshot fingerprints.
+- validated catalog and vulnerability models;
+- secure local and live data ingestion;
+- vendor and yearly catalog summaries;
+- ransomware and forensic-triage distributions;
+- remediation-window statistics;
+- reproducible `as_of` date analysis; and
+- a transparent, deterministic review queue.
 
-Automated tests use only synthetic local data. Live CISA retrieval is performed separately so changing catalog contents or temporary network failures cannot make the test site unreliable.
+Analysis is deliberately separated from file, network, and presentation code.
+The output is currently available as Python dictionaries. CSV, JSON, and HTML report generation have not been implemented yet.
 
-Dashboard analysis and report generation have not been implemented yet.
+see `docs/METHODOLOGY.md` for definitions and interpretation limits.
 
 
 ## Official data source
