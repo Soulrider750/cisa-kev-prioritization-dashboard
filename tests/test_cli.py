@@ -103,6 +103,50 @@ class CliTests(unittest.TestCase):
                 ).is_file()
             )
 
+    def test_report_uses_exported_retrieval_time(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as temporary_directory:
+            output_dir = Path(temporary_directory)
+
+            exit_code, _, stderr = self.run_cli(
+                [
+                    "--input",
+                    str(FIXTURE_PATH),
+                    "--as-of",
+                    "2026-09-03",
+                    "--output-dir",
+                    str(output_dir),
+                ]
+            )
+
+            metadata = json.loads(
+                (
+                    output_dir
+                    / "data"
+                    / "metadata.json"
+                ).read_text(encoding="utf-8")
+            )
+
+            html = (
+                output_dir / "index.html"
+            ).read_text(encoding="utf-8")
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stderr, "")
+        self.assertIn(
+            "Last successful refresh:",
+            html,
+        )
+        self.assertIn(
+            (
+                'datetime="'
+                f'{metadata["retrieved_at"]}'
+                '"'
+            ),
+            html,
+        )
+
     def test_explicit_analysis_date_is_exported(
         self,
     ) -> None:

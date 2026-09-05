@@ -224,6 +224,7 @@ def run_build(
         arguments.output_dir / "index.html",
         top_vendors=arguments.top_vendors,
         queue_limit=arguments.queue_limit,
+        retrieved_at=document.retrieved_at,
     )
 
     return BuildResult(
