@@ -10,6 +10,7 @@ from math import isfinite
 from pathlib import Path
 
 from . import __version__
+from . import build_validation
 from .analysis import analyze_catalog
 from .export import export_build
 from .fetch import (
@@ -227,6 +228,10 @@ def run_build(
         retrieved_at=document.retrieved_at,
     )
 
+    build_validation.validate_build(
+        arguments.output_dir
+    )
+
     return BuildResult(
         source=document.source,
         analysis_date=analysis["metadata"]["as_of"],
@@ -257,6 +262,9 @@ def main(
             f"error: {error}\n",
         )
 
+    print(
+        "Candidate build validation: passed."
+    )
     print(
         f"Validated {result.record_count:,} KEV records."
     )

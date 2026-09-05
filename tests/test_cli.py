@@ -12,6 +12,9 @@ import unittest
 from unittest.mock import patch
 
 from kev_dashboard import __version__
+from kev_dashboard.build_validation import (
+    BuildValidationError,
+)
 from kev_dashboard.cli import main
 from kev_dashboard.fetch import (
     DEFAULT_FEED_URL,
@@ -360,6 +363,73 @@ class CliTests(unittest.TestCase):
         self.assertIn("--queue-limit", stdout)
         self.assertIn("--timeout", stdout)
 
+    def test_cli_validates_candidate_before_success(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as temporary_directory:
+            output_dir = Path(temporary_directory)
+
+            with patch(
+                (
+                    "kev_dashboard.build_validation."
+                    "validate_build"
+                )
+            ) as mocked_validator:
+                exit_code, stdout, stderr = self.run_cli(
+                    [
+                        "--input",
+                        str(FIXTURE_PATH),
+                        "--as-of",
+                        "2026-09-03",
+                        "--output-dir",
+                        str(output_dir),
+                    ]
+                )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stderr, "")
+        self.assertIn(
+            "Candidate build validation: passed.",
+            stdout,
+        )
+
+        mocked_validator.assert_called_once_with(
+            output_dir
+        )
+
+    def test_cli_rejects_invalid_candidate_build(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as temporary_directory:
+            output_dir = Path(temporary_directory)
+
+            with patch(
+                (
+                    "kev_dashboard.build_validation."
+                    "validate_build"
+                ),
+                side_effect=BuildValidationError(
+                    "candidate build failed validation"
+                ),
+            ):
+                exit_code, stdout, stderr = self.run_cli(
+                    [
+                        "--input",
+                        str(FIXTURE_PATH),
+                        "--output-dir",
+                        str(output_dir),
+                    ]
+                )
+
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(stdout, "")
+        self.assertIn(
+            (
+                "error: candidate build failed "
+                "validation"
+            ),
+            stderr,
+        )
 
 if __name__ == "__main__":
     unittest.main()
