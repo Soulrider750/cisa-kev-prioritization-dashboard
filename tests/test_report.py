@@ -1,7 +1,7 @@
 """Tests for the self-contained HTML dashboard."""
 
 from copy import deepcopy
-from datetime import date
+from datetime import date, datetime, timezone
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -68,6 +68,58 @@ class ReportTests(unittest.TestCase):
             "<title>CISA KEV Prioritization Dashboard</title>",
             html,
         )
+
+    def test_retrieval_timestamp_is_displayed_in_utc(
+        self,
+    ) -> None:
+        retrieved_at = datetime(
+            2026,
+            9,
+            5,
+            3,
+            36,
+            25,
+            tzinfo=timezone.utc,
+        )
+
+        html = build_report_html(
+            self.analysis,
+            retrieved_at=retrieved_at,
+        )
+
+        self.assertIn(
+            "Last successful refresh:",
+            html,
+        )
+        self.assertIn(
+            'datetime="2026-09-05T03:36:25+00:00"',
+            html,
+        )
+        self.assertIn(
+            "2026-09-05 03:36:25 UTC",
+            html,
+        )
+
+    def test_naive_retrieval_timestamp_is_rejected(
+        self,
+    ) -> None:
+        retrieved_at = datetime(
+            2026,
+            9,
+            5,
+            3,
+            36,
+            25,
+        )
+
+        with self.assertRaisesRegex(
+            ValueError,
+            "retrieved_at must be timezone-aware",
+        ):
+            build_report_html(
+                self.analysis,
+                retrieved_at=retrieved_at,
+            )
 
     def test_headline_metrics_are_present(self) -> None:
         html = build_report_html(self.analysis)

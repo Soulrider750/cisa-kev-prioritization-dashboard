@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from html import escape
 from pathlib import Path
 from typing import Any
@@ -206,6 +207,36 @@ def _source_markup(source: str) -> str:
         f"<code>{_escape(source)}</code>"
     )
 
+def _retrieved_at_markup(
+    retrieved_at: datetime | None,
+) -> str:
+    """Render an optional retrieval timestamp in UTC."""
+
+    if retrieved_at is None:
+        return ""
+
+    if (
+        retrieved_at.tzinfo is None
+        or retrieved_at.utcoffset() is None
+    ):
+        raise ValueError(
+            "retrieved_at must be timezone-aware"
+        )
+
+    machine_timestamp = retrieved_at.isoformat()
+
+    visible_timestamp = retrieved_at.astimezone(
+        timezone.utc
+    ).strftime(
+        "%Y-%m-%d %H:%M:%S UTC"
+    )
+
+    return (
+        "Last successful refresh: "
+        f'<time datetime="{_escape(machine_timestamp)}">'
+        f"<strong>{_escape(visible_timestamp)}</strong>"
+        "</time><br>"
+    )
 
 def _queue_rows(
     analysis: dict[str, Any],
@@ -249,6 +280,7 @@ def build_report_html(
     *,
     top_vendors: int = 10,
     queue_limit: int = 20,
+    retrieved_at: datetime | None = None,
 ) -> str:
     """Build a complete self-contained HTML dashboard."""
 
@@ -386,6 +418,10 @@ def build_report_html(
 
     source = _source_markup(
         str(metadata["source"])
+    )
+
+    retrieved_at_line = _retrieved_at_markup(
+        retrieved_at
     )
 
     html = f"""<!doctype html>
@@ -675,6 +711,7 @@ def build_report_html(
       </p>
       <p class="source-line">
         Source: {source}<br>
+        {retrieved_at_line}
         Analysis date:
         <strong>{_escape(metadata["as_of"])}</strong> ·
         Catalog version:
@@ -771,6 +808,7 @@ def render_report(
     *,
     top_vendors: int = 10,
     queue_limit: int = 20,
+    retrieved_at: datetime | None = None,
 ) -> Path:
     """Build and atomically write the HTML dashboard."""
 
@@ -778,6 +816,7 @@ def render_report(
         analysis,
         top_vendors=top_vendors,
         queue_limit=queue_limit,
+        retrieved_at=retrieved_at,
     )
 
     atomic_write_text(
