@@ -1,7 +1,9 @@
 """Tests for generated dashboard build validation."""
 
+import csv
 from dataclasses import replace
 from datetime import date, datetime, timezone
+from io import StringIO
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -337,6 +339,231 @@ class BuildValidationTests(unittest.TestCase):
         ):
             validate_build(self.output_dir)
 
+    def test_output_directory_symlink_is_rejected(
+        self,
+    ) -> None:
+        symlink_path = (
+            Path(self.temporary_directory.name)
+            / "candidate-link"
+        )
+
+        symlink_path.symlink_to(
+            self.output_dir,
+            target_is_directory=True,
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "build output must not contain "
+                r"symbolic links: \."
+            ),
+        ):
+            validate_build(symlink_path)
+
+    def test_nondirectory_output_path_is_rejected(
+        self,
+    ) -> None:
+        file_path = (
+            Path(self.temporary_directory.name)
+            / "candidate-file"
+        )
+
+        file_path.write_text(
+            "not a directory\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "build output path must be a "
+                "directory"
+            ),
+        ):
+            validate_build(file_path)
+
+    def test_unexpected_directory_is_rejected(
+        self,
+    ) -> None:
+        unexpected_directory = (
+            self.output_dir
+            / "data"
+            / "private"
+        )
+
+        unexpected_directory.mkdir()
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "unexpected build entry: "
+                r"data/private"
+            ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_vulnerability_csv_header_is_validated(
+        self,
+    ) -> None:
+        csv_path = (
+            self.output_dir
+            / "data"
+            / "vulnerabilities.csv"
+        )
+
+        rows = list(
+            csv.reader(
+                StringIO(
+                    csv_path.read_text(
+                        encoding="utf-8"
+                    ),
+                    newline="",
+                )
+            )
+        )
+
+        rows[0][0] = "cve"
+
+        buffer = StringIO(newline="")
+
+        writer = csv.writer(
+            buffer,
+            lineterminator="\n",
+        )
+
+        writer.writerows(rows)
+
+        csv_path.write_text(
+            buffer.getvalue(),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "vulnerability CSV header does "
+                "not match export contract"
+            ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_vulnerability_csv_count_is_validated(
+        self,
+    ) -> None:
+        csv_path = (
+            self.output_dir
+            / "data"
+            / "vulnerabilities.csv"
+        )
+
+        rows = list(
+            csv.reader(
+                StringIO(
+                    csv_path.read_text(
+                        encoding="utf-8"
+                    ),
+                    newline="",
+                )
+            )
+        )
+
+        self.assertGreater(len(rows), 1)
+
+        rows.pop()
+
+        buffer = StringIO(newline="")
+
+        writer = csv.writer(
+            buffer,
+            lineterminator="\n",
+        )
+
+        writer.writerows(rows)
+
+        csv_path.write_text(
+            buffer.getvalue(),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "record counts do not agree "
+                "across build artifacts"
+            ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_metadata_and_summary_must_agree(
+        self,
+    ) -> None:
+        summary_path = (
+            self.output_dir
+            / "data"
+            / "summary.json"
+        )
+
+        summary = json.loads(
+            summary_path.read_text(
+                encoding="utf-8"
+            )
+        )
+
+        summary["metadata"]["as_of"] = (
+            "2026-09-04"
+        )
+
+        summary_path.write_text(
+            json.dumps(
+                summary,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "metadata and summary do not "
+                "agree"
+            ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_incomplete_report_is_rejected(
+        self,
+    ) -> None:
+        report_path = (
+            self.output_dir
+            / "index.html"
+        )
+
+        report_text = report_path.read_text(
+            encoding="utf-8"
+        )
+
+        self.assertTrue(
+            report_text.endswith("</html>\n")
+        )
+
+        report_path.write_text(
+            report_text.removesuffix(
+                "</html>\n"
+            ),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "report is not a complete "
+                "dashboard document"
+            ),
+        ):
+            validate_build(self.output_dir)
 
 if __name__ == "__main__":
     unittest.main()

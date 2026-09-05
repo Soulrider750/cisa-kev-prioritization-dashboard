@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+import csv
 from datetime import datetime
 from hashlib import sha256
 from html import escape
+from io import StringIO
 import json
 from pathlib import Path
 from typing import Any
+
+from .export import VULNERABILITY_FIELDS
 
 
 _REQUIRED_FILES = frozenset(
@@ -135,6 +139,63 @@ def _valid_record_count(
     )
 
 
+def _vulnerability_csv_record_count(
+    path: Path,
+    relative_path: Path,
+) -> int:
+    """Validate the primary CSV and return its data-row count."""
+
+    content = _read_bytes(
+        path,
+        relative_path,
+    )
+
+    try:
+        text = content.decode("utf-8")
+    except UnicodeDecodeError:
+        raise BuildValidationError(
+            "invalid UTF-8 file: "
+            f"{relative_path.as_posix()}"
+        ) from None
+
+    try:
+        rows = list(
+            csv.reader(
+                StringIO(
+                    text,
+                    newline="",
+                ),
+                strict=True,
+            )
+        )
+    except csv.Error:
+        raise BuildValidationError(
+            "invalid CSV file: "
+            f"{relative_path.as_posix()}"
+        ) from None
+
+    if (
+        not rows
+        or tuple(rows[0])
+        != VULNERABILITY_FIELDS
+    ):
+        raise BuildValidationError(
+            "vulnerability CSV header does "
+            "not match export contract"
+        )
+
+    if any(
+        len(row) != len(VULNERABILITY_FIELDS)
+        for row in rows[1:]
+    ):
+        raise BuildValidationError(
+            "vulnerability CSV rows do not "
+            "match export contract"
+        )
+
+    return len(rows) - 1
+
+
 def validate_build(
     output_dir: Path,
 ) -> None:
@@ -247,12 +308,53 @@ def validate_build(
         summary_relative,
     )
 
+    summary_metadata = summary.get(
+        "metadata"
+    )
+
+    shared_metadata_fields = (
+        "source",
+        "catalog_version",
+        "date_released",
+        "as_of",
+    )
+
+    if (
+        not isinstance(
+            summary_metadata,
+            Mapping,
+        )
+        or any(
+            metadata.get(field)
+            != summary_metadata.get(field)
+            for field in shared_metadata_fields
+        )
+    ):
+        raise BuildValidationError(
+            "metadata and summary do not "
+            "agree"
+        )
+
     snapshot_records = snapshot.get(
         "vulnerabilities"
     )
 
     summary_headline = summary.get(
         "headline"
+    )
+
+    vulnerability_csv_relative = Path(
+        "data/vulnerabilities.csv"
+    )
+
+    vulnerability_csv_count = (
+        _vulnerability_csv_record_count(
+            (
+                output_dir
+                / vulnerability_csv_relative
+            ),
+            vulnerability_csv_relative,
+        )
     )
 
     record_counts: tuple[object, ...] = (
@@ -276,6 +378,7 @@ def validate_build(
             )
             else None
         ),
+        vulnerability_csv_count,
     )
 
     if (
@@ -303,6 +406,24 @@ def validate_build(
         raise BuildValidationError(
             "invalid UTF-8 file: index.html"
         ) from None
+
+    if (
+        not report_text.startswith(
+            "<!doctype html>"
+        )
+        or (
+            "<title>CISA KEV Prioritization "
+            "Dashboard</title>"
+        )
+        not in report_text
+        or not report_text.rstrip().endswith(
+            "</html>"
+        )
+    ):
+        raise BuildValidationError(
+            "report is not a complete "
+            "dashboard document"
+        )
 
     expected_markup = (
         f'datetime="{escape(retrieved_at, quote=True)}"'
