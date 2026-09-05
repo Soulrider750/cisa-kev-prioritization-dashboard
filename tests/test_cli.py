@@ -431,5 +431,6 @@ class CliTests(unittest.TestCase):
             stderr,
         )
 
+
 if __name__ == "__main__":
     unittest.main()

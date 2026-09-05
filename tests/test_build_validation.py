@@ -565,5 +565,6 @@ class BuildValidationTests(unittest.TestCase):
         ):
             validate_build(self.output_dir)
 
+
 if __name__ == "__main__":
     unittest.main()
