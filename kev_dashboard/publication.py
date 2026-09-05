@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+import errno
+import fcntl
 import json
 import os
 from pathlib import Path
 import re
+import stat
 from uuid import uuid4
 
 from . import build_validation
@@ -29,6 +34,10 @@ _SHA256_PATTERN = re.compile(
 
 class PublicationError(ValueError):
     """Raised when a candidate cannot be safely published."""
+
+
+class PublicationBusyError(PublicationError):
+    """Raised when another publication is already running."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -56,6 +65,220 @@ def _require_real_directory(
         raise PublicationError(
             f"{description} must be a directory"
         )
+
+
+def _validate_lock_status(
+    lock_status: os.stat_result,
+) -> None:
+    """Require a private, owned, single-link regular lock file."""
+
+    if not stat.S_ISREG(
+        lock_status.st_mode
+    ):
+        raise PublicationError(
+            "publication lock must be a regular file"
+        )
+
+    if lock_status.st_uid != os.geteuid():
+        raise PublicationError(
+            "publication lock must be owned "
+            "by the current user"
+        )
+
+    if lock_status.st_nlink != 1:
+        raise PublicationError(
+            "publication lock must have "
+            "exactly one link"
+        )
+
+
+@contextmanager
+def _publication_lock(
+    deployment_root: Path,
+) -> Iterator[None]:
+    """Hold the exclusive single-publisher lock."""
+
+    lock_path = (
+        deployment_root / ".publish.lock"
+    )
+
+    try:
+        existing_status = os.lstat(
+            lock_path
+        )
+    except FileNotFoundError:
+        pass
+    except OSError as error:
+        raise PublicationError(
+            "could not inspect publication lock"
+        ) from error
+    else:
+        if stat.S_ISLNK(
+            existing_status.st_mode
+        ):
+            raise PublicationError(
+                "publication lock must not be "
+                "a symbolic link"
+            )
+
+        _validate_lock_status(
+            existing_status
+        )
+
+    try:
+        open_flags = (
+            os.O_RDWR
+            | os.O_CREAT
+            | os.O_CLOEXEC
+            | os.O_NOFOLLOW
+            | os.O_NONBLOCK
+        )
+    except AttributeError:
+        raise PublicationError(
+            "secure publication locking "
+            "is not supported"
+        ) from None
+
+    try:
+        lock_descriptor = os.open(
+            lock_path,
+            open_flags,
+            0o600,
+        )
+    except OSError as error:
+        if error.errno == errno.ELOOP:
+            raise PublicationError(
+                "publication lock must not be "
+                "a symbolic link"
+            ) from error
+
+        try:
+            failed_status = os.lstat(
+                lock_path
+            )
+        except OSError:
+            pass
+        else:
+            if stat.S_ISLNK(
+                failed_status.st_mode
+            ):
+                raise PublicationError(
+                    "publication lock must not be "
+                    "a symbolic link"
+                ) from error
+
+            if not stat.S_ISREG(
+                failed_status.st_mode
+            ):
+                raise PublicationError(
+                    "publication lock must be "
+                    "a regular file"
+                ) from error
+
+        raise PublicationError(
+            "could not open publication lock"
+        ) from error
+
+    try:
+        try:
+            opened_status = os.fstat(
+                lock_descriptor
+            )
+        except OSError as error:
+            raise PublicationError(
+                "could not inspect publication lock"
+            ) from error
+
+        _validate_lock_status(
+            opened_status
+        )
+
+        try:
+            fcntl.flock(
+                lock_descriptor,
+                (
+                    fcntl.LOCK_EX
+                    | fcntl.LOCK_NB
+                ),
+            )
+        except OSError as error:
+            if error.errno in {
+                errno.EACCES,
+                errno.EAGAIN,
+                errno.EWOULDBLOCK,
+            }:
+                raise PublicationBusyError(
+                    "publication already in progress"
+                ) from error
+
+            raise PublicationError(
+                "could not acquire publication lock"
+            ) from error
+
+        try:
+            named_status = os.lstat(
+                lock_path
+            )
+        except OSError as error:
+            raise PublicationError(
+                "could not verify publication lock"
+            ) from error
+
+        if stat.S_ISLNK(
+            named_status.st_mode
+        ):
+            raise PublicationError(
+                "publication lock must not be "
+                "a symbolic link"
+            )
+
+        _validate_lock_status(
+            named_status
+        )
+
+        if (
+            named_status.st_dev
+            != opened_status.st_dev
+            or named_status.st_ino
+            != opened_status.st_ino
+        ):
+            raise PublicationError(
+                "publication lock changed "
+                "while opening"
+            )
+
+        try:
+            os.fchmod(
+                lock_descriptor,
+                0o600,
+            )
+
+            secured_status = os.fstat(
+                lock_descriptor
+            )
+        except OSError as error:
+            raise PublicationError(
+                "could not secure publication lock"
+            ) from error
+
+        if (
+            stat.S_IMODE(
+                secured_status.st_mode
+            )
+            != 0o600
+        ):
+            raise PublicationError(
+                "could not secure publication lock"
+            )
+
+        yield None
+    finally:
+        try:
+            os.close(
+                lock_descriptor
+            )
+        except OSError:
+            pass
 
 
 def _read_previous_release_id(
@@ -248,146 +471,150 @@ def publish_candidate(
         deployment_root,
         "deployment root",
     )
-    _require_real_directory(
-        candidates_path,
-        "candidates directory",
-    )
-    _require_real_directory(
-        releases_path,
-        "releases directory",
-    )
 
-    previous_release_id = (
-        _read_previous_release_id(
-            deployment_root,
-            current_path,
+    with _publication_lock(
+        deployment_root
+    ):
+        _require_real_directory(
+            candidates_path,
+            "candidates directory",
         )
-    )
-
-    _require_real_directory(
-        candidate_path,
-        "candidate",
-    )
-
-    try:
-        build_validation.validate_build(
-            candidate_path
+        _require_real_directory(
+            releases_path,
+            "releases directory",
         )
-    except (
-        build_validation.BuildValidationError,
-        OSError,
-    ) as error:
-        raise PublicationError(
-            "candidate build validation failed: "
-            f"{error}"
-        ) from error
 
-    (
-        source,
-        retrieved_at,
-        snapshot_sha256,
-    ) = _read_candidate_metadata(
-        candidate_path
-    )
-
-    try:
-        policy_result = (
-            deployment_policy.evaluate_deployment_policy(
-                source=source,
-                retrieved_at=retrieved_at,
-                now=now,
-                max_age=max_age,
+        previous_release_id = (
+            _read_previous_release_id(
+                deployment_root,
+                current_path,
             )
         )
-    except (
-        deployment_policy.DeploymentPolicyError
-    ) as error:
-        raise PublicationError(
-            "candidate failed deployment policy: "
-            f"{error}"
-        ) from error
 
-    timestamp = (
-        policy_result.retrieved_at.strftime(
-            "%Y%m%dT%H%M%S%fZ"
-        )
-    )
-
-    release_id = (
-        f"{timestamp}-"
-        f"{snapshot_sha256[:16]}"
-    )
-
-    release_path = (
-        releases_path / release_id
-    )
-
-    if os.path.lexists(release_path):
-        raise PublicationError(
-            "release already exists"
-        )
-
-    relative_target = (
-        Path("releases") / release_id
-    )
-
-    temporary_current_path = (
-        deployment_root
-        / f".current-{uuid4().hex}.tmp"
-    )
-
-    try:
-        temporary_current_path.symlink_to(
-            relative_target,
-            target_is_directory=True,
-        )
-    except OSError as error:
-        raise PublicationError(
-            "could not prepare current symbolic link"
-        ) from error
-
-    try:
-        candidate_path.rename(
-            release_path
-        )
-    except OSError as error:
-        _discard_temporary_link(
-            temporary_current_path
-        )
-
-        raise PublicationError(
-            "could not create release"
-        ) from error
-
-    try:
-        os.replace(
-            temporary_current_path,
-            current_path,
-        )
-    except OSError as switch_error:
-        _discard_temporary_link(
-            temporary_current_path
+        _require_real_directory(
+            candidate_path,
+            "candidate",
         )
 
         try:
-            release_path.rename(
+            build_validation.validate_build(
                 candidate_path
             )
-        except OSError as rollback_error:
+        except (
+            build_validation.BuildValidationError,
+            OSError,
+        ) as error:
             raise PublicationError(
-                "could not activate release and "
-                "could not restore candidate"
-            ) from rollback_error
+                "candidate build validation failed: "
+                f"{error}"
+            ) from error
 
-        raise PublicationError(
-            "could not activate release"
-        ) from switch_error
+        (
+            source,
+            retrieved_at,
+            snapshot_sha256,
+        ) = _read_candidate_metadata(
+            candidate_path
+        )
 
-    return PublicationResult(
-        release_id=release_id,
-        release_path=release_path,
-        current_path=current_path,
-        previous_release_id=(
-            previous_release_id
-        ),
-    )
+        try:
+            policy_result = (
+                deployment_policy.evaluate_deployment_policy(
+                    source=source,
+                    retrieved_at=retrieved_at,
+                    now=now,
+                    max_age=max_age,
+                )
+            )
+        except (
+            deployment_policy.DeploymentPolicyError
+        ) as error:
+            raise PublicationError(
+                "candidate failed deployment policy: "
+                f"{error}"
+            ) from error
+
+        timestamp = (
+            policy_result.retrieved_at.strftime(
+                "%Y%m%dT%H%M%S%fZ"
+            )
+        )
+
+        release_id = (
+            f"{timestamp}-"
+            f"{snapshot_sha256[:16]}"
+        )
+
+        release_path = (
+            releases_path / release_id
+        )
+
+        if os.path.lexists(release_path):
+            raise PublicationError(
+                "release already exists"
+            )
+
+        relative_target = (
+            Path("releases") / release_id
+        )
+
+        temporary_current_path = (
+            deployment_root
+            / f".current-{uuid4().hex}.tmp"
+        )
+
+        try:
+            temporary_current_path.symlink_to(
+                relative_target,
+                target_is_directory=True,
+            )
+        except OSError as error:
+            raise PublicationError(
+                "could not prepare current symbolic link"
+            ) from error
+
+        try:
+            candidate_path.rename(
+                release_path
+            )
+        except OSError as error:
+            _discard_temporary_link(
+                temporary_current_path
+            )
+
+            raise PublicationError(
+                "could not create release"
+            ) from error
+
+        try:
+            os.replace(
+                temporary_current_path,
+                current_path,
+            )
+        except OSError as switch_error:
+            _discard_temporary_link(
+                temporary_current_path
+            )
+
+            try:
+                release_path.rename(
+                    candidate_path
+                )
+            except OSError as rollback_error:
+                raise PublicationError(
+                    "could not activate release and "
+                    "could not restore candidate"
+                ) from rollback_error
+
+            raise PublicationError(
+                "could not activate release"
+            ) from switch_error
+
+        return PublicationResult(
+            release_id=release_id,
+            release_path=release_path,
+            current_path=current_path,
+            previous_release_id=(
+                previous_release_id
+            ),
+        )
