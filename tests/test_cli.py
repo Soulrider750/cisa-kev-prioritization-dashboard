@@ -4,6 +4,7 @@ from contextlib import (
     redirect_stderr,
     redirect_stdout,
 )
+from datetime import date
 from io import StringIO
 import json
 from pathlib import Path
@@ -20,6 +21,7 @@ from kev_dashboard.fetch import (
     DEFAULT_FEED_URL,
     load_local_json,
 )
+from kev_dashboard.pipeline import BuildResult
 
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "kev_sample.json"
@@ -249,6 +251,71 @@ class CliTests(unittest.TestCase):
                 DEFAULT_FEED_URL,
                 timeout=12.5,
             )
+
+    def test_cli_delegates_loaded_document_to_pipeline(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as temporary_directory:
+            output_dir = Path(temporary_directory)
+
+            expected_result = BuildResult(
+                source=self.document.source,
+                analysis_date="2026-09-03",
+                record_count=6,
+                report_path=(
+                    output_dir / "index.html"
+                ),
+                data_paths=(
+                    (
+                        output_dir
+                        / "data"
+                        / "summary.json"
+                    ),
+                ),
+            )
+
+            with (
+                patch(
+                    "kev_dashboard.cli.load_local_json",
+                    return_value=self.document,
+                ),
+                patch(
+                    (
+                        "kev_dashboard.pipeline."
+                        "build_dashboard"
+                    ),
+                    return_value=expected_result,
+                ) as mocked_build_dashboard,
+            ):
+                exit_code, stdout, stderr = self.run_cli(
+                    [
+                        "--input",
+                        str(FIXTURE_PATH),
+                        "--output-dir",
+                        str(output_dir),
+                        "--as-of",
+                        "2026-09-03",
+                        "--top-vendors",
+                        "2",
+                        "--queue-limit",
+                        "3",
+                    ]
+                )
+
+        self.assertEqual(exit_code, 0)
+        self.assertEqual(stderr, "")
+        self.assertIn(
+            "Validated 6 KEV records.",
+            stdout,
+        )
+
+        mocked_build_dashboard.assert_called_once_with(
+            self.document,
+            output_dir,
+            as_of=date(2026, 9, 3),
+            top_vendors=2,
+            queue_limit=3,
+        )
 
     def test_invalid_date_is_rejected(self) -> None:
         exit_code, _, stderr = self.run_cli(
