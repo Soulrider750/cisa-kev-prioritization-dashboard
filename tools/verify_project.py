@@ -177,6 +177,17 @@ def check_project_metadata(
             "kev-dashboard console script is incorrect",
         )
 
+    if scripts.get("kev-dashboard-refresh") != (
+        "kev_dashboard.live_cli:main"
+    ):
+        record_failure(
+            failures,
+            (
+                "kev-dashboard-refresh console "
+                "script is incorrect",
+            ),
+        )
+
     try:
         version_attribute = configuration[
             "tool"
