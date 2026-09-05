@@ -602,8 +602,11 @@ def publish_candidate(
                 )
             except OSError as rollback_error:
                 raise PublicationError(
-                    "could not activate release and "
-                    "could not restore candidate"
+                    "could not activate release: "
+                    f"{switch_error}; unactivated release "
+                    f"remains at {release_path}; could not "
+                    "restore candidate to "
+                    f"{candidate_path}: {rollback_error}"
                 ) from rollback_error
 
             raise PublicationError(
