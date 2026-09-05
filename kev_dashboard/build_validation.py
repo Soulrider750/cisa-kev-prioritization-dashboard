@@ -2,7 +2,13 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
+from datetime import datetime
+from hashlib import sha256
+from html import escape
+import json
 from pathlib import Path
+from typing import Any
 
 
 _REQUIRED_FILES = frozenset(
@@ -29,6 +35,104 @@ _ALLOWED_ENTRIES = (
 
 class BuildValidationError(ValueError):
     """Raised when a generated build is unsafe to publish."""
+
+
+def _read_bytes(
+    path: Path,
+    relative_path: Path,
+) -> bytes:
+    """Read one build file with a stable validation error."""
+
+    try:
+        return path.read_bytes()
+    except OSError:
+        raise BuildValidationError(
+            "could not read build file: "
+            f"{relative_path.as_posix()}"
+        ) from None
+
+
+def _load_json_object(
+    path: Path,
+    relative_path: Path,
+    *,
+    raw_bytes: bytes | None = None,
+) -> Mapping[str, Any]:
+    """Load one UTF-8 JSON object from the candidate build."""
+
+    content = (
+        raw_bytes
+        if raw_bytes is not None
+        else _read_bytes(path, relative_path)
+    )
+
+    try:
+        value = json.loads(content)
+    except (
+        UnicodeDecodeError,
+        json.JSONDecodeError,
+    ):
+        raise BuildValidationError(
+            "invalid JSON file: "
+            f"{relative_path.as_posix()}"
+        ) from None
+
+    if not isinstance(value, Mapping):
+        raise BuildValidationError(
+            "JSON file must contain an object: "
+            f"{relative_path.as_posix()}"
+        )
+
+    return value
+
+
+def _retrieved_at_text(
+    metadata: Mapping[str, Any],
+) -> str:
+    """Return a validated timezone-aware retrieval timestamp."""
+
+    value = metadata.get("retrieved_at")
+
+    error_message = (
+        "metadata retrieved_at must be a "
+        "timezone-aware ISO 8601 timestamp"
+    )
+
+    if not isinstance(value, str):
+        raise BuildValidationError(
+            error_message
+        )
+
+    try:
+        retrieved_at = datetime.fromisoformat(
+            value
+        )
+    except ValueError:
+        raise BuildValidationError(
+            error_message
+        ) from None
+
+    if (
+        retrieved_at.tzinfo is None
+        or retrieved_at.utcoffset() is None
+    ):
+        raise BuildValidationError(
+            error_message
+        )
+
+    return value
+
+
+def _valid_record_count(
+    value: object,
+) -> bool:
+    """Return whether a value is a nonnegative integer count."""
+
+    return (
+        isinstance(value, int)
+        and not isinstance(value, bool)
+        and value >= 0
+    )
 
 
 def validate_build(
@@ -93,5 +197,121 @@ def validate_build(
                 "unexpected build entry: "
                 f"{relative_path.as_posix()}"
             )
+
+    metadata_relative = Path(
+        "data/metadata.json"
+    )
+    snapshot_relative = Path(
+        "data/kev_snapshot.json"
+    )
+    summary_relative = Path(
+        "data/summary.json"
+    )
+    report_relative = Path("index.html")
+
+    metadata = _load_json_object(
+        output_dir / metadata_relative,
+        metadata_relative,
+    )
+
+    retrieved_at = _retrieved_at_text(
+        metadata
+    )
+
+    snapshot_bytes = _read_bytes(
+        output_dir / snapshot_relative,
+        snapshot_relative,
+    )
+
+    actual_digest = sha256(
+        snapshot_bytes
+    ).hexdigest()
+
+    if (
+        metadata.get("snapshot_sha256")
+        != actual_digest
+    ):
+        raise BuildValidationError(
+            "snapshot SHA-256 does not match "
+            "metadata"
+        )
+
+    snapshot = _load_json_object(
+        output_dir / snapshot_relative,
+        snapshot_relative,
+        raw_bytes=snapshot_bytes,
+    )
+
+    summary = _load_json_object(
+        output_dir / summary_relative,
+        summary_relative,
+    )
+
+    snapshot_records = snapshot.get(
+        "vulnerabilities"
+    )
+
+    summary_headline = summary.get(
+        "headline"
+    )
+
+    record_counts: tuple[object, ...] = (
+        metadata.get("record_count"),
+        snapshot.get("count"),
+        (
+            len(snapshot_records)
+            if isinstance(
+                snapshot_records,
+                list,
+            )
+            else None
+        ),
+        (
+            summary_headline.get(
+                "total_vulnerabilities"
+            )
+            if isinstance(
+                summary_headline,
+                Mapping,
+            )
+            else None
+        ),
+    )
+
+    if (
+        not all(
+            _valid_record_count(value)
+            for value in record_counts
+        )
+        or len(set(record_counts)) != 1
+    ):
+        raise BuildValidationError(
+            "record counts do not agree "
+            "across build artifacts"
+        )
+
+    report_bytes = _read_bytes(
+        output_dir / report_relative,
+        report_relative,
+    )
+
+    try:
+        report_text = report_bytes.decode(
+            "utf-8"
+        )
+    except UnicodeDecodeError:
+        raise BuildValidationError(
+            "invalid UTF-8 file: index.html"
+        ) from None
+
+    expected_markup = (
+        f'datetime="{escape(retrieved_at, quote=True)}"'
+    )
+
+    if expected_markup not in report_text:
+        raise BuildValidationError(
+            "report refresh timestamp does "
+            "not match metadata"
+        )
 
     return None

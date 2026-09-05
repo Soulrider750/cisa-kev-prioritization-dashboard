@@ -2,6 +2,7 @@
 
 from dataclasses import replace
 from datetime import date, datetime, timezone
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -165,6 +166,173 @@ class BuildValidationTests(unittest.TestCase):
                 "build output must not contain "
                 "symbolic links: "
                 r"data/metadata\.json"
+            ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_invalid_metadata_json_is_rejected(
+        self,
+    ) -> None:
+        metadata_path = (
+            self.output_dir
+            / "data"
+            / "metadata.json"
+        )
+
+        metadata_path.write_text(
+            "{invalid JSON\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "invalid JSON file: "
+                r"data/metadata\.json"
+            ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_naive_retrieval_timestamp_is_rejected(
+        self,
+    ) -> None:
+        metadata_path = (
+            self.output_dir
+            / "data"
+            / "metadata.json"
+        )
+
+        metadata = json.loads(
+            metadata_path.read_text(
+                encoding="utf-8"
+            )
+        )
+
+        metadata["retrieved_at"] = (
+            "2026-09-05T03:36:25"
+        )
+
+        metadata_path.write_text(
+            json.dumps(
+                metadata,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "metadata retrieved_at must be a "
+                "timezone-aware ISO 8601 timestamp"
+            ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_snapshot_digest_mismatch_is_rejected(
+        self,
+    ) -> None:
+        snapshot_path = (
+            self.output_dir
+            / "data"
+            / "kev_snapshot.json"
+        )
+
+        snapshot_path.write_bytes(
+            snapshot_path.read_bytes()
+            + b"\n"
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "snapshot SHA-256 does not match "
+                "metadata"
+            ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_record_count_mismatch_is_rejected(
+        self,
+    ) -> None:
+        metadata_path = (
+            self.output_dir
+            / "data"
+            / "metadata.json"
+        )
+
+        metadata = json.loads(
+            metadata_path.read_text(
+                encoding="utf-8"
+            )
+        )
+
+        metadata["record_count"] += 1
+
+        metadata_path.write_text(
+            json.dumps(
+                metadata,
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "record counts do not agree "
+                "across build artifacts"
+            ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_report_refresh_timestamp_must_match_metadata(
+        self,
+    ) -> None:
+        report_path = (
+            self.output_dir
+            / "index.html"
+        )
+
+        expected_timestamp = (
+            self.document.retrieved_at.isoformat()
+        )
+
+        report_text = report_path.read_text(
+            encoding="utf-8"
+        )
+
+        original_markup = (
+            f'datetime="{expected_timestamp}"'
+        )
+
+        altered_markup = (
+            'datetime="2026-09-05T03:36:26+00:00"'
+        )
+
+        self.assertIn(
+            original_markup,
+            report_text,
+        )
+
+        report_path.write_text(
+            report_text.replace(
+                original_markup,
+                altered_markup,
+                1,
+            ),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            (
+                "report refresh timestamp does "
+                "not match metadata"
             ),
         ):
             validate_build(self.output_dir)
