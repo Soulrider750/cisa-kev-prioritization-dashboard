@@ -4,15 +4,12 @@ from __future__ import annotations
 
 import argparse
 from collections.abc import Sequence
-from dataclasses import dataclass
 from datetime import date
 from math import isfinite
 from pathlib import Path
 
 from . import __version__
-from . import build_validation
-from .analysis import analyze_catalog
-from .export import export_build
+from . import pipeline
 from .fetch import (
     CatalogLoadError,
     DEFAULT_FEED_URL,
@@ -20,22 +17,8 @@ from .fetch import (
     fetch_live_json,
     load_local_json,
 )
-from .models import (
-    CatalogValidationError,
-    parse_catalog,
-)
-from .report import render_report
-
-
-@dataclass(frozen=True, slots=True)
-class BuildResult:
-    """Important outputs from one successful dashboard build."""
-
-    source: str
-    analysis_date: str
-    record_count: int
-    report_path: Path
-    data_paths: tuple[Path, ...]
+from .models import CatalogValidationError
+from .pipeline import BuildResult
 
 
 def _iso_date(value: str) -> date:
@@ -187,7 +170,7 @@ def build_parser() -> argparse.ArgumentParser:
 def run_build(
     arguments: argparse.Namespace,
 ) -> BuildResult:
-    """Run the complete dashboard pipeline."""
+    """Load a catalog and delegate dashboard construction."""
 
     if arguments.input is not None:
         document = load_local_json(
@@ -204,40 +187,12 @@ def run_build(
             timeout=arguments.timeout,
         )
 
-    catalog = parse_catalog(
-        document.payload,
-        source=document.source,
-    )
-
-    analysis = analyze_catalog(
-        catalog,
-        as_of=arguments.as_of,
-    )
-
-    data_paths = export_build(
+    return pipeline.build_dashboard(
         document,
-        analysis,
         arguments.output_dir,
-    )
-
-    report_path = render_report(
-        analysis,
-        arguments.output_dir / "index.html",
+        as_of=arguments.as_of,
         top_vendors=arguments.top_vendors,
         queue_limit=arguments.queue_limit,
-        retrieved_at=document.retrieved_at,
-    )
-
-    build_validation.validate_build(
-        arguments.output_dir
-    )
-
-    return BuildResult(
-        source=document.source,
-        analysis_date=analysis["metadata"]["as_of"],
-        record_count=len(catalog.vulnerabilities),
-        report_path=report_path,
-        data_paths=data_paths,
     )
 
 
