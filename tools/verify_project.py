@@ -37,6 +37,10 @@ REQUIRED_PATHS = (
     Path("tests/fixtures/kev_sample.json"),
     Path("tests/test_container_contract.py"),
     Path("tools/verify_project.py"),
+    Path("compose.yaml"),
+    Path("Dockerfile.web"),
+    Path("deploy/nginx.conf"),
+    Path("tests/test_compose_contract.py"),
 )
 
 EXPECTED_OUTPUTS = {
