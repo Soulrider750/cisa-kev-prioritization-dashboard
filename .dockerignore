@@ -1,0 +1,9 @@
+# Deny everything unless it is an explicit package-build input.
+**
+!Dockerfile
+!pyproject.toml
+!README.md
+!LICENSE
+!kev_dashboard/
+!kev_dashboard/*.py
+!kev_dashboard/**/*.py
