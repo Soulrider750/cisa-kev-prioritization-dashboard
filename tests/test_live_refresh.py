@@ -90,12 +90,17 @@ class LiveRefreshTests(unittest.TestCase):
             / "current"
         )
 
-        self.candidates_path.mkdir(
+        self.deployment_root.mkdir(
             mode=0o700,
-            parents=True,
         )
 
-        self.releases_path.mkdir()
+        self.candidates_path.mkdir(
+            mode=0o700,
+        )
+
+        self.releases_path.mkdir(
+            mode=0o700,
+)
 
         self.now = datetime(
             2026,
