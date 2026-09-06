@@ -22,8 +22,10 @@ FIXTURE = (
 )
 
 REQUIRED_PATHS = (
+    Path(".dockerignore"),
     Path(".gitignore"),
     Path(".github/workflows/tests.yml"),
+    Path("Dockerfile"),
     Path("LICENSE"),
     Path("Makefile"),
     Path("PUBLISHING_STATUS.md"),
@@ -33,6 +35,7 @@ REQUIRED_PATHS = (
     Path("docs/METHODOLOGY.md"),
     Path("pyproject.toml"),
     Path("tests/fixtures/kev_sample.json"),
+    Path("tests/test_container_contract.py"),
     Path("tools/verify_project.py"),
 )
 
@@ -184,8 +187,8 @@ def check_project_metadata(
             failures,
             (
                 "kev-dashboard-refresh console "
-                "script is incorrect",
-            ),
+                "script is incorrect"
+            )
         )
 
     try:
