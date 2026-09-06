@@ -1,9 +1,12 @@
-# Deny everything unless it is an explicit package-build input.
+# Deny everything unless it is an explicit image-build input.
 **
 !Dockerfile
+!Dockerfile.web
 !pyproject.toml
 !README.md
 !LICENSE
 !kev_dashboard/
 !kev_dashboard/*.py
 !kev_dashboard/**/*.py
+!deploy/
+!deploy/nginx.conf

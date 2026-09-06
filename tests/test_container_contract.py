@@ -751,12 +751,15 @@ class ContainerContractTests(unittest.TestCase):
             (
                 "**",
                 "!Dockerfile",
+                "!Dockerfile.web",
                 "!pyproject.toml",
                 "!README.md",
                 "!LICENSE",
                 "!kev_dashboard/",
                 "!kev_dashboard/*.py",
                 "!kev_dashboard/**/*.py",
+                "!deploy/",
+                "!deploy/nginx.conf",
             ),
         )
 

@@ -1,0 +1,90 @@
+name: kev-dashboard
+
+services:
+  refresh:
+    image: kev-dashboard-refresh:c9328fb
+    pull_policy: never
+    profiles:
+      - operations
+    restart: "no"
+    user: "10001:10001"
+    read_only: true
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 1.0
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+    volumes:
+      - type: volume
+        source: dashboard-data
+        target: /srv/kev-dashboard
+        read_only: false
+    networks:
+      - refresh-egress
+
+  web:
+    image: kev-dashboard-web:0.8.0
+    pull_policy: never
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    restart: unless-stopped
+    stop_grace_period: 10s
+    user: "10001:10001"
+    read_only: true
+    pids_limit: 64
+    mem_limit: 128m
+    cpus: 0.50
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=10001,gid=10001
+    volumes:
+      - type: volume
+        source: dashboard-data
+        target: /srv/kev-dashboard
+        read_only: true
+    networks:
+      - web-internal
+    expose:
+      - "8080"
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -q
+        - -O
+        - /dev/null
+        - http://127.0.0.1:8080/index.html
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+networks:
+  refresh-egress:
+    driver: bridge
+    internal: false
+
+  web-internal:
+    driver: bridge
+    internal: true
+
+volumes:
+  dashboard-data:
+    name: "${KEV_DASHBOARD_VOLUME:?set KEV_DASHBOARD_VOLUME}"
+    external: true

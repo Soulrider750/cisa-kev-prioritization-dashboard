@@ -1,0 +1,15 @@
+# syntax=docker/dockerfile:1
+
+FROM nginxinc/nginx-unprivileged:1.30.4-alpine-slim@sha256:b1d850535f815f18e9dd12ca7e9f4d36de36a49e246ccd8ef64289b0d06bde49
+
+LABEL org.opencontainers.image.title="CISA KEV Prioritization Dashboard Web Origin" \
+    org.opencontainers.image.description="Read-only static web origin for the CISA KEV Prioritization Dashboard" \
+    org.opencontainers.image.source="https://github.com/Soulrider750/cisa-kev-prioritization-dashboard" \
+    org.opencontainers.image.licenses="MIT"
+
+COPY --chown=0:0 --chmod=0444 deploy/nginx.conf /etc/nginx/nginx.conf
+
+USER 10001:10001
+
+ENTRYPOINT ["/usr/sbin/nginx"]
+CMD ["-g", "daemon off;"]
