@@ -1,0 +1,14 @@
+[Unit]
+Description=Run the CISA KEV dashboard refresh twice daily
+Documentation=https://github.com/Soulrider750/cisa-kev-prioritization-dashboard
+
+[Timer]
+OnCalendar=*-*-* 10:17:00 UTC
+OnCalendar=*-*-* 22:17:00 UTC
+RandomizedDelaySec=15m
+AccuracySec=1m
+Persistent=true
+Unit=kev-dashboard-refresh.service
+
+[Install]
+WantedBy=timers.target
