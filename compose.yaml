@@ -75,6 +75,61 @@ services:
       retries: 3
       start_period: 10s
 
+  tunnel:
+    image: cloudflare/cloudflared:2026.8.3@sha256:51c9cefcb4569df44e1ad403ab1d3d8065aa8e84339bcfc6aee75502e1140339
+    pull_policy: never
+    restart: unless-stopped
+    stop_grace_period: 30s
+    user: "65532:65532"
+    read_only: true
+    pids_limit: 128
+    mem_limit: 256m
+    cpus: 0.50
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
+    command:
+      - tunnel
+      - --metrics
+      - 127.0.0.1:2000
+      - --loglevel
+      - info
+      - run
+      - --token-file
+      - /run/secrets/cloudflared-token
+    volumes:
+      - type: bind
+        source: /etc/kev-dashboard/cloudflared-token
+        target: /run/secrets/cloudflared-token
+        read_only: true
+        bind:
+          create_host_path: false
+    networks:
+      web-internal:
+      tunnel-egress:
+        gw_priority: 1
+    depends_on:
+      web:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - cloudflared
+        - tunnel
+        - --metrics
+        - 127.0.0.1:2000
+        - ready
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
 networks:
   refresh-egress:
     driver: bridge
@@ -83,6 +138,10 @@ networks:
   web-internal:
     driver: bridge
     internal: true
+
+  tunnel-egress:
+    driver: bridge
+    internal: false
 
 volumes:
   dashboard-data:

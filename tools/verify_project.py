@@ -40,7 +40,11 @@ REQUIRED_PATHS = (
     Path("compose.yaml"),
     Path("Dockerfile.web"),
     Path("deploy/nginx.conf"),
+    Path("deploy/refresh-production.sh"),
+    Path("deploy/systemd/kev-dashboard-refresh.service"),
+    Path("deploy/systemd/kev-dashboard-refresh.timer"),
     Path("tests/test_compose_contract.py"),
+    Path("tests/test_systemd_contract.py"),
 )
 
 EXPECTED_OUTPUTS = {

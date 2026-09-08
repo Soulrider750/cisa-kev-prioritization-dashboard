@@ -1,4 +1,4 @@
-"""Static tests for the private dashboard web stack."""
+"""Static tests for the live dashboard container stack."""
 
 from __future__ import annotations
 
@@ -14,11 +14,25 @@ WEB_DOCKERFILE_PATH = PROJECT_ROOT / "Dockerfile.web"
 NGINX_CONFIG_PATH = PROJECT_ROOT / "deploy" / "nginx.conf"
 
 DEPLOYMENT_ROOT = "/srv/kev-dashboard"
-CONTAINER_IDENTITY = "10001:10001"
+APPLICATION_IDENTITY = "10001:10001"
+TUNNEL_IDENTITY = "65532:65532"
 
 DATA_VOLUME = "dashboard-data"
 REFRESH_NETWORK = "refresh-egress"
 WEB_NETWORK = "web-internal"
+TUNNEL_NETWORK = "tunnel-egress"
+TUNNEL_TOKEN_SOURCE = (
+    "/etc/kev-dashboard/cloudflared-token"
+)
+TUNNEL_TOKEN_TARGET = (
+    "/run/secrets/cloudflared-token"
+)
+
+CLOUDFLARED_IMAGE = (
+    "cloudflare/cloudflared:2026.8.3@sha256:"
+    "51c9cefcb4569df44e1ad403ab1d3d8065aa8e84"
+    "339bcfc6aee75502e1140339"
+)
 
 NGINX_BASE = (
     "nginxinc/nginx-unprivileged:"
@@ -40,7 +54,7 @@ def _meaningful_lines(text: str) -> tuple[str, ...]:
 
 
 class ComposeContractTests(unittest.TestCase):
-    """Verify the private web-origin security contract."""
+    """Verify the live deployment security contract."""
 
     def read_required(self, path: Path) -> str:
         """Read one required UTF-8 deployment file."""
@@ -197,7 +211,7 @@ class ComposeContractTests(unittest.TestCase):
 
         self.assertEqual(
             service_names,
-            {"refresh", "web"},
+            {"refresh", "web", "tunnel"},
         )
 
     def test_volume_is_external_and_required(self) -> None:
@@ -272,12 +286,47 @@ class ComposeContractTests(unittest.TestCase):
             ),
         )
 
+        tunnel_volumes = self.block(
+            self.service_block("tunnel"),
+            "volumes",
+            4,
+        )
+
+        self.assertEqual(
+            tunnel_volumes,
+            (
+                "    volumes:",
+                "      - type: bind",
+                f"        source: {TUNNEL_TOKEN_SOURCE}",
+                f"        target: {TUNNEL_TOKEN_TARGET}",
+                "        read_only: true",
+                "        bind:",
+                "          create_host_path: false",
+            ),
+        )
+
     def test_services_have_fixed_runtime_hardening(
         self,
     ) -> None:
         expected_resources = {
-            "refresh": ("128", "512m", "1.0"),
-            "web": ("64", "128m", "0.50"),
+            "refresh": (
+                APPLICATION_IDENTITY,
+                "128",
+                "512m",
+                "1.0",
+            ),
+            "web": (
+                APPLICATION_IDENTITY,
+                "64",
+                "128m",
+                "0.50",
+            ),
+            "tunnel": (
+                TUNNEL_IDENTITY,
+                "128",
+                "256m",
+                "0.50",
+            ),
         }
 
         for service_name, resources in (
@@ -287,11 +336,11 @@ class ComposeContractTests(unittest.TestCase):
                 service = self.service_block(service_name)
 
                 required_lines = (
-                    f'    user: "{CONTAINER_IDENTITY}"',
+                    f'    user: "{resources[0]}"',
                     "    read_only: true",
-                    f"    pids_limit: {resources[0]}",
-                    f"    mem_limit: {resources[1]}",
-                    f"    cpus: {resources[2]}",
+                    f"    pids_limit: {resources[1]}",
+                    f"    mem_limit: {resources[2]}",
+                    f"    cpus: {resources[3]}",
                 )
 
                 for required_line in required_lines:
@@ -347,6 +396,9 @@ class ComposeContractTests(unittest.TestCase):
         refresh = self.service_block("refresh")
         self.assertNotIn("    tmpfs:", refresh)
 
+        tunnel = self.service_block("tunnel")
+        self.assertNotIn("    tmpfs:", tunnel)
+
         web = self.service_block("web")
 
         self.assertEqual(
@@ -380,7 +432,11 @@ class ComposeContractTests(unittest.TestCase):
 
         self.assertEqual(
             network_names,
-            {REFRESH_NETWORK, WEB_NETWORK},
+            {
+                REFRESH_NETWORK,
+                WEB_NETWORK,
+                TUNNEL_NETWORK,
+            },
         )
 
         self.assertEqual(
@@ -398,6 +454,15 @@ class ComposeContractTests(unittest.TestCase):
                 f"  {WEB_NETWORK}:",
                 "    driver: bridge",
                 "    internal: true",
+            ),
+        )
+
+        self.assertEqual(
+            self.block(networks, TUNNEL_NETWORK, 2),
+            (
+                f"  {TUNNEL_NETWORK}:",
+                "    driver: bridge",
+                "    internal: false",
             ),
         )
 
@@ -422,6 +487,20 @@ class ComposeContractTests(unittest.TestCase):
             (
                 "    networks:",
                 f"      - {WEB_NETWORK}",
+            ),
+        )
+
+        self.assertEqual(
+            self.block(
+                self.service_block("tunnel"),
+                "networks",
+                4,
+            ),
+            (
+                "    networks:",
+                f"      {WEB_NETWORK}:",
+                f"      {TUNNEL_NETWORK}:",
+                "        gw_priority: 1",
             ),
         )
 
@@ -488,7 +567,25 @@ class ComposeContractTests(unittest.TestCase):
             ),
         )
 
-    def test_web_healthcheck_and_no_secrets(
+        tunnel = self.service_block("tunnel")
+
+        self.assertIn(
+            f"    image: {CLOUDFLARED_IMAGE}",
+            tunnel,
+        )
+        self.assertIn("    pull_policy: never", tunnel)
+        self.assertIn(
+            "    restart: unless-stopped",
+            tunnel,
+        )
+        self.assertIn(
+            "    stop_grace_period: 30s",
+            tunnel,
+        )
+        self.assertNotIn("    build:", tunnel)
+        self.assertNotIn("    profiles:", tunnel)
+
+    def test_web_healthcheck_and_no_ambient_secrets(
         self,
     ) -> None:
         text = self.compose_text()
@@ -529,7 +626,15 @@ class ComposeContractTests(unittest.TestCase):
             )
 
         self.assertNotIn("/var/run/docker.sock", text)
-        self.assertNotIn("/run/secrets", text)
+
+        self.assertEqual(
+            text.count(TUNNEL_TOKEN_SOURCE),
+            1,
+        )
+        self.assertEqual(
+            text.count(TUNNEL_TOKEN_TARGET),
+            2,
+        )
 
         interpolation_variables = set(
             re.findall(
@@ -542,6 +647,66 @@ class ComposeContractTests(unittest.TestCase):
             interpolation_variables,
             {"KEV_DASHBOARD_VOLUME"},
         )
+
+    def test_tunnel_command_health_and_dependency(
+        self,
+    ) -> None:
+        text = self.compose_text()
+        tunnel = self.service_block("tunnel")
+
+        self.assertEqual(
+            self.block(tunnel, "command", 4),
+            (
+                "    command:",
+                "      - tunnel",
+                "      - --metrics",
+                "      - 127.0.0.1:2000",
+                "      - --loglevel",
+                "      - info",
+                "      - run",
+                "      - --token-file",
+                f"      - {TUNNEL_TOKEN_TARGET}",
+            ),
+        )
+
+        self.assertEqual(
+            self.block(tunnel, "depends_on", 4),
+            (
+                "    depends_on:",
+                "      web:",
+                "        condition: service_healthy",
+            ),
+        )
+
+        self.assertEqual(
+            self.block(tunnel, "healthcheck", 4),
+            (
+                "    healthcheck:",
+                "      test:",
+                "        - CMD",
+                "        - cloudflared",
+                "        - tunnel",
+                "        - --metrics",
+                "        - 127.0.0.1:2000",
+                "        - ready",
+                "      interval: 30s",
+                "      timeout: 5s",
+                "      retries: 3",
+                "      start_period: 20s",
+            ),
+        )
+
+        self.assertIsNone(
+            re.search(r"(?m)(?:^|\s)--token(?:\s|$)", text),
+            "literal token arguments are forbidden",
+        )
+
+        for forbidden_text in (
+            "TUNNEL_TOKEN=",
+            "TUNNEL_TOKEN_FILE=",
+            "CF_TUNNEL_TOKEN",
+        ):
+            self.assertNotIn(forbidden_text, text)
 
     def test_web_dockerfile_uses_pinned_base(
         self,
@@ -575,7 +740,7 @@ class ComposeContractTests(unittest.TestCase):
                 for line in lines
                 if line.startswith("USER ")
             ],
-            [f"USER {CONTAINER_IDENTITY}"],
+            [f"USER {APPLICATION_IDENTITY}"],
         )
 
         self.assertIn(
