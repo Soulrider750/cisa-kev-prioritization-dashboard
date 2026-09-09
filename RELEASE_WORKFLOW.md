@@ -4,9 +4,9 @@ This checklist defines the review required before a version is committed,
 tagged, or published. No command in this repository automatically publishes
 the project.
 
-Current release review: v0.9.0 release candidate
+Current release review: v0.9.0 publication record
 
-Latest published release: v0.8.0
+Latest published release: v0.9.0
 
 ## 1. Technical verification
 
@@ -90,3 +90,15 @@ not alter author information already stored in repository history.
 Production evidence contains host-specific details and remains private. Public
 documentation records the controls and verification outcome, not credentials,
 raw host inventories, temporary paths, or changing catalog counts.
+
+## 8. v0.9.0 release record
+
+- [x] Merge the exact release candidate through protected pull request #7.
+- [x] Confirm the merged commit passes main-branch offline verification and
+  CodeQL analysis.
+- [x] Complete isolated Ubuntu verification without changing production.
+- [x] Preserve host-specific evidence outside the public repository.
+- [ ] Create the annotated `v0.9.0` tag from the final publication commit.
+- [ ] Publish the GitHub Release from that exact tag.
+- [ ] Verify the public tag, release metadata, and downloadable source
+  archives before closing the release record.
