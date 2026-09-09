@@ -17,6 +17,7 @@ FROM python:3.14.7-slim-bookworm@sha256:9ab8d9c8514b44f90cf0029dd42fdd7e9e211e63
 
 LABEL org.opencontainers.image.title="CISA KEV Prioritization Dashboard" \
     org.opencontainers.image.description="One-shot production worker for securely refreshing the live CISA KEV dashboard" \
+    org.opencontainers.image.version="0.9.0" \
     org.opencontainers.image.source="https://github.com/Soulrider750/cisa-kev-prioritization-dashboard" \
     org.opencontainers.image.licenses="MIT"
 

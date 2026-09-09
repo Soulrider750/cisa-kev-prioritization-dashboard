@@ -8,6 +8,8 @@ import re
 import shlex
 import unittest
 
+from kev_dashboard import __version__ as DASHBOARD_VERSION
+
 
 PROJECT_ROOT = (
     Path(__file__).resolve().parents[1]
@@ -724,6 +726,13 @@ class ContainerContractTests(unittest.TestCase):
                 "org.opencontainers.image.licenses"
             ),
             "MIT",
+        )
+
+        self.assertEqual(
+            labels.get(
+                "org.opencontainers.image.version"
+            ),
+            DASHBOARD_VERSION,
         )
 
         self.assertTrue(

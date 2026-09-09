@@ -4,6 +4,10 @@ This checklist defines the review required before a version is committed,
 tagged, or published. No command in this repository automatically publishes
 the project.
 
+Current release review: v0.9.0 release candidate
+
+Latest published release: v0.8.0
+
 ## 1. Technical verification
 
 - [x] Run `python3 --version` and confirm Python 3.11 or later.
