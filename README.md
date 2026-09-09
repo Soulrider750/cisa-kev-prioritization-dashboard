@@ -11,6 +11,11 @@ operational.
 The public dashboard is available at
 [kev.cloudsoulrider750.net](https://kev.cloudsoulrider750.net/).
 
+[![Public CISA KEV Prioritization Dashboard showing its provenance, interpretation notice, and snapshot overview](docs/images/live-dashboard-overview.jpg)](https://kev.cloudsoulrider750.net/)
+
+*Live public view captured on 2026-09-09. Catalog values change as CISA
+updates the source feed.*
+
 The deployment retrieves the approved CISA KEV feed twice daily, builds and
 validates a complete candidate release, and atomically activates it only after
 all publication checks pass. A failed refresh leaves the previous validated
@@ -34,6 +39,22 @@ The origin publishes no host port. Runtime design, monitoring, failure
 behavior, and recovery boundaries are documented in
 [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
+## Engineering case study
+
+The [public case study](docs/CASE_STUDY.md) explains the problem, constraints,
+architecture, security decisions, failure handling, verification evidence,
+lessons learned, and skills demonstrated while moving the project from a local
+report to a live service.
+
+Portfolio highlights include:
+
+- strict validation and bounded retrieval for untrusted external data;
+- transparent review signals and reproducible source provenance;
+- serialized, atomic publication that preserves the last-known-good release;
+- least-privilege containers, separated networks, and a private web origin;
+- persistent systemd scheduling and structured operational evidence; and
+- protected pull requests, Python 3.11–3.14 CI, and CodeQL analysis.
+
 ## Purpose
 
 The project transforms CISA KEV data into a reproducible dashboard containing catalog trends and a transparent vulnerability review queue.
@@ -46,7 +67,7 @@ It demonstrates:
 - source provenance and SHA-256 integrity evidence;
 - safe CSV and HTML generation;
 - accessible, self-contained reporting;
-- automated testing across supported Python versions; and
+- automated testing across supported Python versions;
 - an offline release-verification workflow; and
 - a hardened container deployment with scheduled, last-known-good refreshes.
 

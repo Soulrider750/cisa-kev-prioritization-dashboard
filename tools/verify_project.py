@@ -43,7 +43,9 @@ REQUIRED_PATHS = (
     Path("deploy/refresh-production.sh"),
     Path("deploy/systemd/kev-dashboard-refresh.service"),
     Path("deploy/systemd/kev-dashboard-refresh.timer"),
+    Path("docs/CASE_STUDY.md"),
     Path("docs/OPERATIONS.md"),
+    Path("docs/images/live-dashboard-overview.jpg"),
     Path("tests/test_compose_contract.py"),
     Path("tests/test_systemd_contract.py"),
 )
@@ -343,6 +345,8 @@ def check_repository_hygiene(
         "synthetic",
         "make verify",
         "security.md",
+        "docs/case_study.md",
+        "docs/images/live-dashboard-overview.jpg",
         "docs/methodology.md",
         "docs/operations.md",
         "https://kev.cloudsoulrider750.net/",
