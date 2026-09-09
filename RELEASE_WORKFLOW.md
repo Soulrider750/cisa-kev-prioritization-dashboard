@@ -4,9 +4,11 @@ This checklist defines the review required before a version is committed,
 tagged, or published. No command in this repository automatically publishes
 the project.
 
-Current release review: v0.9.0 publication record
+Current release review: v0.9.0 complete
 
 Latest published release: v0.9.0
+
+Release published: 2026-09-09
 
 ## 1. Technical verification
 
@@ -98,7 +100,7 @@ raw host inventories, temporary paths, or changing catalog counts.
   CodeQL analysis.
 - [x] Complete isolated Ubuntu verification without changing production.
 - [x] Preserve host-specific evidence outside the public repository.
-- [ ] Create the annotated `v0.9.0` tag from the final publication commit.
-- [ ] Publish the GitHub Release from that exact tag.
-- [ ] Verify the public tag, release metadata, and downloadable source
+- [x] Create the annotated `v0.9.0` tag from the final publication commit.
+- [x] Publish the GitHub Release from that exact tag.
+- [x] Verify the public tag, release metadata, and downloadable source
   archives before closing the release record.

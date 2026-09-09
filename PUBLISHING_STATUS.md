@@ -8,6 +8,8 @@ Deployment status: LIVE
 
 Repository published: 2026-09-04
 
+v0.9.0 published: 2026-09-09
+
 v0.9.0 release verified: 2026-09-09
 
 Live deployment verified: 2026-09-09
@@ -19,6 +21,9 @@ passed local verification and GitHub CI across Python 3.11 through 3.14.
 Version 0.9.0 records the completed live-deployment milestone. Its exact
 candidate passed the offline release gate, GitHub CI, CodeQL analysis, and an
 isolated Ubuntu verification that left the production deployment unchanged.
+The annotated tag and public GitHub Release both resolve to the final reviewed
+publication commit, and both generated source archives were retrieved
+successfully.
 
 ## Required gates
 
@@ -33,6 +38,8 @@ isolated Ubuntu verification that left the production deployment unchanged.
 - [x] The repository owner has explicitly approved publication.
 - [x] The exact v0.9.0 candidate passed isolated Ubuntu verification.
 - [x] Candidate testing left the production deployment unchanged.
+- [x] The v0.9.0 tag and GitHub Release resolve to the publication commit.
+- [x] The public v0.9.0 source archives were retrieved successfully.
 
 ## Live deployment gates
 
