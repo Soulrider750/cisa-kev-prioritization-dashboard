@@ -2,8 +2,37 @@
 
 A dependency-free Python application that retrieves, validates, analyzes, and visualizes the Cybersecurity and Infrastructure Security Agency's Known Exploited Vulnerabilities catalog.
 
-**Project status:** Version 0.8.0 is the initial public release. Automated
-verification passes on Python 3.11 through 3.14.
+**Project status:** Version 0.8.0 is publicly released. Automated verification
+passes on Python 3.11 through 3.14, and the live dashboard deployment is
+operational.
+
+## Live dashboard
+
+The public dashboard is available at
+[kev.cloudsoulrider750.net](https://kev.cloudsoulrider750.net/).
+
+The deployment retrieves the approved CISA KEV feed twice daily, builds and
+validates a complete candidate release, and atomically activates it only after
+all publication checks pass. A failed refresh leaves the previous validated
+release online. Public metadata records the catalog version, retrieval time,
+record count, source, and SHA-256 digest of the preserved source snapshot.
+
+```text
+CISA KEV JSON feed
+        |
+        v
+one-shot refresh worker -> validated versioned release
+                                   |
+                                   v
+                         read-only NGINX origin
+                                   |
+                                   v
+                    outbound Cloudflare Tunnel -> HTTPS
+```
+
+The origin publishes no host port. Runtime design, monitoring, failure
+behavior, and recovery boundaries are documented in
+[docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 ## Purpose
 
@@ -18,7 +47,8 @@ It demonstrates:
 - safe CSV and HTML generation;
 - accessible, self-contained reporting;
 - automated testing across supported Python versions; and
-- an offline release-verification workflow.
+- an offline release-verification workflow; and
+- a hardened container deployment with scheduled, last-known-good refreshes.
 
 The dashboard does not calculate an organization's actual risk. Asset ownership, vulnerable versions, exposure, business impact, compensating controls, remediation status, and local threat intelligence are required for organization-specific prioritization.
 
@@ -141,9 +171,11 @@ Review [SECURITY.md](SECURITY.md) before reporting a security concern or process
 
 ## Publication status
 
-Version 0.8.0 is publicly released. Release evidence and continuing safeguards
-are recorded in [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md) and
-[RELEASE_WORKFLOW.md](RELEASE_WORKFLOW.md).
+Version 0.8.0 is publicly released, and the live service was operationally
+verified on 2026-09-09. Release evidence and continuing safeguards are recorded
+in [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md),
+[RELEASE_WORKFLOW.md](RELEASE_WORKFLOW.md), and
+[docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 ## License
 
