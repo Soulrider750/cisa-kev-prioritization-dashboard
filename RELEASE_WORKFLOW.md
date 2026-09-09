@@ -62,3 +62,27 @@ not alter author information already stored in repository history.
 - [x] Create or connect a remote only after approval.
 - [x] Push only the reviewed commit history.
 - [x] Verify the public repository immediately after publication.
+
+## 7. Live deployment verification
+
+- [x] Build deployment artifacts only from a clean, reviewed commit.
+- [x] Transfer committed source with an integrity-checked Git bundle.
+- [x] Verify pinned container identities before production use.
+- [x] Confirm the refresh, web, and tunnel services retain their tested runtime
+  restrictions.
+- [x] Confirm the web origin is reachable only through its private container
+  network and has no host-published port.
+- [x] Keep the tunnel credential outside Git, Compose environment values,
+  process arguments, and captured evidence.
+- [x] Validate a candidate release before atomically changing `current`.
+- [x] Confirm failed refreshes preserve the last-known-good release.
+- [x] Verify the public hostname, HTTPS redirect, security headers, and cache
+  policy independently.
+- [x] Run one controlled manual refresh before enabling the timer.
+- [x] Observe one successful timer-initiated refresh before closing deployment.
+- [x] Confirm the public metadata agrees with the activated production release.
+- [x] Configure tunnel health notifications.
+
+Production evidence contains host-specific details and remains private. Public
+documentation records the controls and verification outcome, not credentials,
+raw host inventories, temporary paths, or changing catalog counts.

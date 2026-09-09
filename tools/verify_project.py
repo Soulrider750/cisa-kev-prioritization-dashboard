@@ -43,6 +43,7 @@ REQUIRED_PATHS = (
     Path("deploy/refresh-production.sh"),
     Path("deploy/systemd/kev-dashboard-refresh.service"),
     Path("deploy/systemd/kev-dashboard-refresh.timer"),
+    Path("docs/OPERATIONS.md"),
     Path("tests/test_compose_contract.py"),
     Path("tests/test_systemd_contract.py"),
 )
@@ -343,6 +344,8 @@ def check_repository_hygiene(
         "make verify",
         "security.md",
         "docs/methodology.md",
+        "docs/operations.md",
+        "https://kev.cloudsoulrider750.net/",
     )
 
     for term in required_readme_terms:
