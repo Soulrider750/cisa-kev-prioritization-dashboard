@@ -4,6 +4,7 @@ FROM nginxinc/nginx-unprivileged:1.30.4-alpine-slim@sha256:b1d850535f815f18e9dd1
 
 LABEL org.opencontainers.image.title="CISA KEV Prioritization Dashboard Web Origin" \
     org.opencontainers.image.description="Read-only static web origin for the CISA KEV Prioritization Dashboard" \
+    org.opencontainers.image.version="0.9.0" \
     org.opencontainers.image.source="https://github.com/Soulrider750/cisa-kev-prioritization-dashboard" \
     org.opencontainers.image.licenses="MIT"
 

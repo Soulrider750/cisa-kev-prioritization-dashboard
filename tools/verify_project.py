@@ -22,6 +22,7 @@ FIXTURE = (
 )
 
 REQUIRED_PATHS = (
+    Path("CHANGELOG.md"),
     Path(".dockerignore"),
     Path(".gitignore"),
     Path(".github/workflows/tests.yml"),
@@ -48,6 +49,7 @@ REQUIRED_PATHS = (
     Path("docs/images/live-dashboard-overview.jpg"),
     Path("tests/test_compose_contract.py"),
     Path("tests/test_systemd_contract.py"),
+    Path("tests/test_release_contract.py"),
 )
 
 EXPECTED_OUTPUTS = {
@@ -349,6 +351,7 @@ def check_repository_hygiene(
         "docs/images/live-dashboard-overview.jpg",
         "docs/methodology.md",
         "docs/operations.md",
+        "changelog.md",
         "https://kev.cloudsoulrider750.net/",
     )
 

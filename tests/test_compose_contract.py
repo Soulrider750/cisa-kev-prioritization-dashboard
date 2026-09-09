@@ -6,6 +6,8 @@ from pathlib import Path
 import re
 import unittest
 
+from kev_dashboard import __version__ as DASHBOARD_VERSION
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -527,7 +529,10 @@ class ComposeContractTests(unittest.TestCase):
         refresh = self.service_block("refresh")
 
         self.assertIn(
-            "    image: kev-dashboard-refresh:c9328fb",
+            (
+                "    image: kev-dashboard-refresh:"
+                f"{DASHBOARD_VERSION}"
+            ),
             refresh,
         )
         self.assertIn("    pull_policy: never", refresh)
@@ -545,7 +550,10 @@ class ComposeContractTests(unittest.TestCase):
         web = self.service_block("web")
 
         self.assertIn(
-            "    image: kev-dashboard-web:0.8.0",
+            (
+                "    image: kev-dashboard-web:"
+                f"{DASHBOARD_VERSION}"
+            ),
             web,
         )
         self.assertIn("    pull_policy: never", web)
@@ -758,6 +766,13 @@ class ComposeContractTests(unittest.TestCase):
         )
         self.assertIn(
             "org.opencontainers.image.licenses=\"MIT\"",
+            text,
+        )
+        self.assertIn(
+            (
+                "org.opencontainers.image.version=\""
+                f"{DASHBOARD_VERSION}\""
+            ),
             text,
         )
 

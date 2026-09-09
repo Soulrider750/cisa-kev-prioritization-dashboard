@@ -2,6 +2,10 @@
 
 Status: PUBLISHED
 
+Current public release: v0.8.0
+
+Release candidate: v0.9.0
+
 Deployment status: LIVE
 
 Published: 2026-09-04
