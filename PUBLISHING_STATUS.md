@@ -2,22 +2,23 @@
 
 Status: PUBLISHED
 
-Current public release: v0.8.0
-
-Release candidate: v0.9.0
+Current public release: v0.9.0
 
 Deployment status: LIVE
 
-Published: 2026-09-04
+Repository published: 2026-09-04
+
+v0.9.0 release verified: 2026-09-09
 
 Live deployment verified: 2026-09-09
 
 Last reviewed: 2026-09-09
 
-The repository was published on 2026-09-04 after the release candidate passed
-local verification and GitHub CI across Python 3.11 through 3.14. The public
-dashboard subsequently passed container, private-origin, tunnel, HTTPS,
-publication, and naturally scheduled refresh verification.
+The repository was first published on 2026-09-04 after the initial release
+passed local verification and GitHub CI across Python 3.11 through 3.14.
+Version 0.9.0 records the completed live-deployment milestone. Its exact
+candidate passed the offline release gate, GitHub CI, CodeQL analysis, and an
+isolated Ubuntu verification that left the production deployment unchanged.
 
 ## Required gates
 
@@ -30,6 +31,8 @@ publication, and naturally scheduled refresh verification.
 - [x] All third-party material is properly attributed.
 - [x] Commit names and email addresses are acceptable for public display.
 - [x] The repository owner has explicitly approved publication.
+- [x] The exact v0.9.0 candidate passed isolated Ubuntu verification.
+- [x] Candidate testing left the production deployment unchanged.
 
 ## Live deployment gates
 
