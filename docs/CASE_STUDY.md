@@ -59,7 +59,7 @@ I used the following constraints to shape the implementation:
 ## Architecture
 
 ```mermaid
-flowchart LR
+flowchart TB
     A["CISA KEV<br/>HTTPS JSON feed"] --> B["One-shot Python<br/>refresh worker"]
     B --> C["Private candidate<br/>directory"]
     C --> D{"Build validation<br/>and deployment policy"}
