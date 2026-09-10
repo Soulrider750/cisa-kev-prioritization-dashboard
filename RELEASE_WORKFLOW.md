@@ -4,11 +4,12 @@ This checklist defines the review required before a version is committed,
 tagged, or published. No command in this repository automatically publishes
 the project.
 
-Current release review: v0.9.0 complete
-
+Current release review: v0.9.1 in progress
 Latest published release: v0.9.0
 
-Release published: 2026-09-09
+Latest published release date: 2026-09-09
+
+Sections 1 through 8 retain the completed v0.9.0 record. Section 9 tracks the v0.9.1 review.
 
 ## 1. Technical verification
 
@@ -104,3 +105,24 @@ raw host inventories, temporary paths, or changing catalog counts.
 - [x] Publish the GitHub Release from that exact tag.
 - [x] Verify the public tag, release metadata, and downloadable source
   archives before closing the release record.
+
+## 9. v0.9.1 release review
+
+- [x] Merge the corrective image-lock change through pull request #10.
+- [x] Confirm the merged fix passes main-branch offline verification and
+  CodeQL analysis.
+- [x] Complete isolated wrapper behavior and real Compose configuration
+  checks for the underlying fix without accessing production.
+- [ ] Verify the exact versioned candidate locally and through GitHub CI.
+- [ ] Build and verify the exact candidate worker and web images on Ubuntu.
+- [ ] Complete isolated runtime acceptance, including real image identity
+  checks and refresh execution, without changing production.
+- [ ] Preserve candidate evidence privately and record a sanitized outcome.
+- [ ] Merge the accepted release candidate through the protected workflow.
+- [ ] Verify the final publication source and obtain owner approval.
+- [ ] Create the annotated v0.9.1 tag and publish its GitHub Release.
+- [ ] Verify the public tag, release metadata, and source archives.
+
+Production promotion is a separate operational change. Completing this
+release checklist does not authorize replacing production configuration,
+images, credentials, data, or scheduling.

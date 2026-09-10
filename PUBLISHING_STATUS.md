@@ -4,6 +4,8 @@ Status: PUBLISHED
 
 Current public release: v0.9.0
 
+Release candidate: v0.9.1
+
 Deployment status: LIVE
 
 v0.9.0 production promotion: BLOCKED pending a corrective patch release
@@ -16,7 +18,7 @@ v0.9.0 release verified: 2026-09-09
 
 Live deployment verified: 2026-09-09
 
-Last reviewed: 2026-09-09
+Last reviewed: 2026-09-10
 
 The repository was first published on 2026-09-04 after the initial release
 passed local verification and GitHub CI across Python 3.11 through 3.14.
@@ -35,7 +37,23 @@ production promotion of v0.9.0 is blocked; the correction is recorded under
 `Unreleased` and will be delivered as a patch release without moving the
 existing v0.9.0 tag.
 
-## Required gates
+## v0.9.1 candidate status
+
+Version 0.9.1 contains the corrective image-lock change merged through pull
+request #10. The underlying fix passed GitHub CI, the complete offline
+verifier, real Compose configuration validation, and 31 isolated wrapper
+behavior checks before version preparation.
+
+The wrapper behavior checks used simulated Docker responses, root identity,
+and file metadata. They establish controlled wrapper behavior, not successful
+production execution.
+
+The exact versioned candidate and its container images still require their
+own release verification. Publication and production promotion remain pending
+separate approval. The existing production deployment and published v0.9.0
+tag are unchanged.
+
+## v0.9.0 completed release gates.
 
 - [x] All unit tests pass.
 - [x] The complete offline verifier passes.
