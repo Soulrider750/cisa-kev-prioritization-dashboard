@@ -6,6 +6,14 @@ they change whenever CISA updates the source feed.
 
 ## [Unreleased]
 
+### Fixed
+
+- Bound the production Compose image references to a protected per-host image
+  lock, verified both local image IDs, and checked the fully resolved Compose
+  model before a scheduled refresh can run.
+- Added Bash and embedded-Python syntax regression checks for the root-run
+  production refresh wrapper.
+
 ## [0.9.0] - 2026-09-09
 
 ### Added

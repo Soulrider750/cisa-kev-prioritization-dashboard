@@ -6,6 +6,8 @@ Current public release: v0.9.0
 
 Deployment status: LIVE
 
+v0.9.0 production promotion: BLOCKED pending a corrective patch release
+
 Repository published: 2026-09-04
 
 v0.9.0 published: 2026-09-09
@@ -24,6 +26,14 @@ isolated Ubuntu verification that left the production deployment unchanged.
 The annotated tag and public GitHub Release both resolve to the final reviewed
 publication commit, and both generated source archives were retrieved
 successfully.
+
+A post-publication, read-only production inventory found that the v0.9.0
+Compose image selection and the scheduled refresh wrapper's trusted image
+identity came from different constants. The live deployment was not changed
+and continues operating with its previously verified image set. Direct
+production promotion of v0.9.0 is blocked; the correction is recorded under
+`Unreleased` and will be delivered as a patch release without moving the
+existing v0.9.0 tag.
 
 ## Required gates
 
