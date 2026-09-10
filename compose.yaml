@@ -2,7 +2,7 @@ name: kev-dashboard
 
 services:
   refresh:
-    image: kev-dashboard-refresh:0.9.0
+    image: "${KEV_DASHBOARD_REFRESH_IMAGE:?set KEV_DASHBOARD_REFRESH_IMAGE}"
     pull_policy: never
     profiles:
       - operations
@@ -30,7 +30,7 @@ services:
       - refresh-egress
 
   web:
-    image: kev-dashboard-web:0.9.0
+    image: "${KEV_DASHBOARD_WEB_IMAGE:?set KEV_DASHBOARD_WEB_IMAGE}"
     pull_policy: never
     build:
       context: .

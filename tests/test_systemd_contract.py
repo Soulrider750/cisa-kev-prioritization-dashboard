@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from pathlib import Path
 import re
+import subprocess
 import unittest
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
+COMPOSE_PATH = PROJECT_ROOT / "compose.yaml"
 REFRESH_SCRIPT = (
     PROJECT_ROOT / "deploy" / "refresh-production.sh"
 )
@@ -68,21 +70,30 @@ class SystemdContractTests(unittest.TestCase):
                 "readonly DATA_VOLUME="
                 "'kev-dashboard-production-data-v1'"
             ),
-            "readonly WORKER_REF='kev-dashboard-refresh:c9328fb'",
-            (
-                "readonly WORKER_ID='sha256:"
-                "c385c267c85e67c40de4e1dedd8e0b789f7ef0de"
-                "bed917b72526580247c2a87e'"
-            ),
+            "KEV_DASHBOARD_REFRESH_IMAGE",
+            "KEV_DASHBOARD_REFRESH_IMAGE_ID",
+            "KEV_DASHBOARD_WEB_IMAGE",
+            "KEV_DASHBOARD_WEB_IMAGE_ID",
             "docker --context default compose",
             "--project-name kev-dashboard",
             "--profile operations config --quiet",
+            "--profile operations config --format json",
             "--profile operations run",
             "--rm",
             "--no-deps",
             "--pull never",
             "--no-TTY",
             "refresh",
+            "production Compose environment has an unexpected key",
+            "production Compose environment has a duplicate key",
+            "production Compose environment is missing a required key",
+            "production refresh image reference is invalid",
+            "production web image reference is invalid",
+            "production refresh image ID is invalid",
+            "production web image ID is invalid",
+            'fail "trusted $image_role image identity mismatch"',
+            "python3 -I -B -",
+            "resolved production Compose model failed identity validation",
         )
 
         for fragment in required_fragments:
@@ -94,6 +105,10 @@ class SystemdContractTests(unittest.TestCase):
             "DOCKER_CONTEXT",
             "DOCKER_API_VERSION",
             "KEV_DASHBOARD_VOLUME",
+            "KEV_DASHBOARD_REFRESH_IMAGE",
+            "KEV_DASHBOARD_REFRESH_IMAGE_ID",
+            "KEV_DASHBOARD_WEB_IMAGE",
+            "KEV_DASHBOARD_WEB_IMAGE_ID",
             "COMPOSE_FILE",
             "COMPOSE_PROJECT_NAME",
             "COMPOSE_PROFILES",
@@ -112,8 +127,86 @@ class SystemdContractTests(unittest.TestCase):
             "docker system prune",
             "--build",
             "--pull always",
+            "eval ",
+            "kev-dashboard-refresh:c9328fb",
+            (
+                "sha256:"
+                "c385c267c85e67c40de4e1dedd8e0b789f7ef0de"
+                "bed917b72526580247c2a87e"
+            ),
         ):
             self.assertNotIn(forbidden, text)
+
+        self.assertNotRegex(
+            text,
+            (
+                r'''(?m)^\s*(?:source|\.)\s+'''
+                r'''(?:--\s+)?["']?\$ENV_PATH'''
+            ),
+            "the root-run wrapper must parse, not source, the env file",
+        )
+
+    def test_refresh_script_has_valid_bash_syntax(self) -> None:
+        result = subprocess.run(
+            ("bash", "-n", str(REFRESH_SCRIPT)),
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+        self.assertEqual(
+            result.returncode,
+            0,
+            result.stderr,
+        )
+
+    def test_refresh_script_embedded_python_is_valid(self) -> None:
+        text = self.read_required(REFRESH_SCRIPT)
+        snippets = re.findall(
+            r"(?ms)<<'PY'\n(.*?)^PY$",
+            text,
+        )
+
+        self.assertEqual(len(snippets), 1)
+        compile(
+            snippets[0],
+            str(REFRESH_SCRIPT),
+            "exec",
+        )
+
+    def test_image_lock_contract_is_shared_with_compose(
+        self,
+    ) -> None:
+        compose = self.read_required(COMPOSE_PATH)
+        script = self.read_required(REFRESH_SCRIPT)
+
+        image_variables = (
+            (
+                "KEV_DASHBOARD_REFRESH_IMAGE",
+                "KEV_DASHBOARD_REFRESH_IMAGE_ID",
+            ),
+            (
+                "KEV_DASHBOARD_WEB_IMAGE",
+                "KEV_DASHBOARD_WEB_IMAGE_ID",
+            ),
+        )
+
+        for image_variable, identity_variable in image_variables:
+            with self.subTest(image_variable=image_variable):
+                self.assertIn(
+                    (
+                        "${"
+                        f"{image_variable}:?set {image_variable}"
+                        "}"
+                    ),
+                    compose,
+                )
+                self.assertIn(image_variable, script)
+                self.assertIn(identity_variable, script)
+                self.assertNotIn(
+                    "${" + identity_variable,
+                    compose,
+                )
 
     def test_service_is_oneshot_and_hardened(self) -> None:
         text = self.read_required(SERVICE_UNIT)

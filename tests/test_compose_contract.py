@@ -523,15 +523,15 @@ class ComposeContractTests(unittest.TestCase):
             ),
         )
 
-    def test_service_images_and_startup_are_fixed(
+    def test_service_images_and_startup_are_controlled(
         self,
     ) -> None:
         refresh = self.service_block("refresh")
 
         self.assertIn(
             (
-                "    image: kev-dashboard-refresh:"
-                f"{DASHBOARD_VERSION}"
+                '    image: "${KEV_DASHBOARD_REFRESH_IMAGE:'
+                '?set KEV_DASHBOARD_REFRESH_IMAGE}"'
             ),
             refresh,
         )
@@ -551,8 +551,8 @@ class ComposeContractTests(unittest.TestCase):
 
         self.assertIn(
             (
-                "    image: kev-dashboard-web:"
-                f"{DASHBOARD_VERSION}"
+                '    image: "${KEV_DASHBOARD_WEB_IMAGE:'
+                '?set KEV_DASHBOARD_WEB_IMAGE}"'
             ),
             web,
         )
@@ -653,7 +653,11 @@ class ComposeContractTests(unittest.TestCase):
 
         self.assertEqual(
             interpolation_variables,
-            {"KEV_DASHBOARD_VOLUME"},
+            {
+                "KEV_DASHBOARD_REFRESH_IMAGE",
+                "KEV_DASHBOARD_VOLUME",
+                "KEV_DASHBOARD_WEB_IMAGE",
+            },
         )
 
     def test_tunnel_command_health_and_dependency(

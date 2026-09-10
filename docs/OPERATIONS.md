@@ -106,6 +106,19 @@ The committed container contract requires:
 - read-only data access for the web origin; and
 - no host-published dashboard ports.
 
+The root-controlled `/etc/kev-dashboard/compose.env` file is also the
+production deployment lock. It contains the exact production volume name,
+the refresh and web image references, and the expected local SHA-256 image
+IDs. These values are deployment state rather than credentials, but the file
+remains outside Git and is writable only by root.
+
+Before every scheduled refresh, the host wrapper parses that file as data; it
+never executes or sources its contents. The wrapper rejects malformed,
+unknown, duplicate, missing, or empty fields, verifies that both local image
+references resolve to the locked IDs, and confirms that the fully resolved
+Compose model selects the same images and production volume. Any disagreement
+stops the refresh before a container is created.
+
 The tunnel credential is stored outside the repository and mounted read-only as
 a file. It must never be placed in source control, Compose environment values,
 process arguments, terminal transcripts, issue reports, or public evidence.
@@ -174,6 +187,14 @@ Deployment changes follow the same fail-closed sequence as the original
 installation: verify source and image identities, validate the Compose model,
 stage a versioned configuration, confirm private health, activate it, test the
 public hostname, and only then accept the change.
+
+During an image upgrade, stop the refresh timer and prove that no refresh is
+running before replacing the deployment lock. Install the complete lock file
+with its required ownership and mode as one operation; do not edit individual
+values while the scheduler is active. Activate the versioned configuration
+only after the referenced images and their IDs have been independently
+verified. Re-enable the timer only after the private and public acceptance
+checks pass.
 
 If a refresh fails, inspect its structured event and journal output before
 another attempt. Do not manually replace the dashboard data `current` link or
