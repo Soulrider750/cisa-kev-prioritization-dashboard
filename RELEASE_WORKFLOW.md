@@ -113,15 +113,24 @@ raw host inventories, temporary paths, or changing catalog counts.
   CodeQL analysis.
 - [x] Complete isolated wrapper behavior and real Compose configuration
   checks for the underlying fix without accessing production.
-- [ ] Verify the exact versioned candidate locally and through GitHub CI.
-- [ ] Build and verify the exact candidate worker and web images on Ubuntu.
-- [ ] Complete isolated runtime acceptance, including real image identity
+- [x] Verify the exact versioned candidate locally and through GitHub CI.
+- [x] Build and verify the exact candidate worker and web images on Ubuntu.
+- [x] Complete isolated runtime acceptance, including real image identity
   checks and refresh execution, without changing production.
-- [ ] Preserve candidate evidence privately and record a sanitized outcome.
-- [ ] Merge the accepted release candidate through the protected workflow.
-- [ ] Verify the final publication source and obtain owner approval.
+- [x] Preserve candidate evidence privately and record a sanitized outcome.
+- [x] Merge the accepted release candidate through the protected workflow.
+- [x] Confirm the candidate and merged source trees are identical and the
+  merged candidate passes main-branch Offline verification and CodeQL.
+- [x] Obtain owner approval to finalize and publish v0.9.1, subject to the
+  remaining verification gates.
+- [ ] Verify the final publication source and its main-branch checks.
 - [ ] Create the annotated v0.9.1 tag and publish its GitHub Release.
 - [ ] Verify the public tag, release metadata, and source archives.
+
+The isolated runtime acceptance included a verifier-only correction for
+Docker's named-volume representation. Original failure evidence was retained,
+and recovery passed without another live refresh. This acceptance does not
+establish v0.9.1 production deployment or systemd timer acceptance.
 
 Production promotion is a separate operational change. Completing this
 release checklist does not authorize replacing production configuration,
