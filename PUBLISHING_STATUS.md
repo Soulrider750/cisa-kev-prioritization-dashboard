@@ -40,18 +40,44 @@ existing v0.9.0 tag.
 ## v0.9.1 candidate status
 
 Version 0.9.1 contains the corrective image-lock change merged through pull
-request #10. The underlying fix passed GitHub CI, the complete offline
-verifier, real Compose configuration validation, and 31 isolated wrapper
-behavior checks before version preparation.
+request #10. Before version preparation, the underlying fix passed the
+complete offline verifier, GitHub CI, real Compose configuration validation,
+and 31 isolated wrapper behavior checks. Those behavior checks used simulated
+Docker responses, root identity, and file metadata.
 
-The wrapper behavior checks used simulated Docker responses, root identity,
-and file metadata. They establish controlled wrapper behavior, not successful
-production execution.
+The exact versioned candidate,
+`850d759335bc164d70c57a494748008d505dec66`, subsequently passed the complete
+offline verifier with 187 tests, pull-request CI, and Ubuntu acceptance of
+its Linux/amd64 worker and web images.
 
-The exact versioned candidate and its container images still require their
-own release verification. Publication and production promotion remain pending
-separate approval. The existing production deployment and published v0.9.0
-tag are unchanged.
+Isolated Ubuntu runtime acceptance used a root-run refresh wrapper adapted
+for the test deployment and a dedicated scratch volume. One live refresh
+completed successfully. Four rejection cases verified rejection of
+incorrect lock-file permissions or image identities, including preservation
+of the complete last-known-good scratch release after a rejected attempt.
+Private HTTP checks verified the expected dashboard content, security
+headers, and blocked deployment paths.
+
+An initial web-runtime verification failure came from the verifier rejecting
+Docker's legacy representation of the expected named-volume mount. A
+verifier-only correction checked the resolved mount type, exact volume name,
+destination, and read-only access, while allowing only its matching legacy
+encoding. The original failure evidence was retained. Recovery acceptance
+passed without changing the application or candidate images and without
+performing an additional live refresh.
+
+Pull request #11 merged the candidate as
+`2f7f029050c343ec1c69fa3ed60582ce8011c338`. The candidate and merge commits
+have identical Git trees. The merged commit also passed local offline
+verification and main-branch Offline verification and CodeQL workflows.
+
+Host-specific evidence remains private. Candidate acceptance did not mount
+production data or change the production deployment. It did not establish
+v0.9.1 systemd timer acceptance or validate an installed production upgrade.
+
+Final publication-source review and explicit owner approval remain pending.
+Publication and production promotion are separate approval gates. The
+existing production deployment and published v0.9.0 tag remain unchanged.
 
 ## v0.9.0 completed release gates.
 
