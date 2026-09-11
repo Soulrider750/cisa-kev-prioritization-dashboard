@@ -121,7 +121,9 @@ raw host inventories, temporary paths, or changing catalog counts.
 - [x] Merge the accepted release candidate through the protected workflow.
 - [x] Confirm the candidate and merged source trees are identical and the
   merged candidate passes main-branch Offline verification and CodeQL.
-- [ ] Verify the final publication source and obtain owner approval.
+- [x] Obtain owner approval to finalize and publish v0.9.1, subject to the
+  remaining verification gates.
+- [ ] Verify the final publication source and its main-branch checks.
 - [ ] Create the annotated v0.9.1 tag and publish its GitHub Release.
 - [ ] Verify the public tag, release metadata, and source archives.
 

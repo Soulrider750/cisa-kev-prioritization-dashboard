@@ -2,9 +2,10 @@
 
 A dependency-free Python application that retrieves, validates, analyzes, and visualizes the Cybersecurity and Infrastructure Security Agency's Known Exploited Vulnerabilities catalog.
 
-**Project status:** Version 0.9.1 is a release candidate and is not yet
-published or deployed. Version 0.9.0 remains the latest public release.
-The existing live installation is separate from this candidate.
+**Project status:** Version 0.9.1 contains corrective deployment image-lock
+changes. This source version does not identify the version currently running
+on the live service. Production upgrades require separate verification and
+approval.
 
 ## Live dashboard
 
@@ -192,8 +193,10 @@ Review [SECURITY.md](SECURITY.md) before reporting a security concern or process
 
 ## Publication status
 
-Version 0.9.0 is the latest public release. The live service was operationally
-verified on 2026-09-09.
+Published versions are listed on the project's
+[GitHub Releases page](https://github.com/Soulrider750/cisa-kev-prioritization-dashboard/releases).
+The live service was operationally verified on 2026-09-09. Source publication
+and production promotion are separate operations.
 Release history, evidence, and continuing safeguards are recorded in
 [CHANGELOG.md](CHANGELOG.md), [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md),
 [RELEASE_WORKFLOW.md](RELEASE_WORKFLOW.md), and

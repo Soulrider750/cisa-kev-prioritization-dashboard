@@ -1,5 +1,9 @@
 # Publishing status
 
+This publication-source checkpoint records completed acceptance and owner
+approval before external tag, release, and archive verification. Historical
+publication dates below are not a claim that v0.9.1 has already been published.
+
 Status: PUBLISHED
 
 Current public release: v0.9.0
@@ -33,9 +37,8 @@ A post-publication, read-only production inventory found that the v0.9.0
 Compose image selection and the scheduled refresh wrapper's trusted image
 identity came from different constants. The live deployment was not changed
 and continues operating with its previously verified image set. Direct
-production promotion of v0.9.0 is blocked; the correction is recorded under
-`Unreleased` and will be delivered as a patch release without moving the
-existing v0.9.0 tag.
+production promotion of v0.9.0 remains blocked. The correction is recorded in
+the v0.9.1 changelog entry; the existing v0.9.0 tag will not be moved.
 
 ## v0.9.1 candidate status
 
@@ -75,9 +78,18 @@ Host-specific evidence remains private. Candidate acceptance did not mount
 production data or change the production deployment. It did not establish
 v0.9.1 systemd timer acceptance or validate an installed production upgrade.
 
-Final publication-source review and explicit owner approval remain pending.
-Publication and production promotion are separate approval gates. The
-existing production deployment and published v0.9.0 tag remain unchanged.
+Final publication preparation changes only README, changelog, publishing
+status, and release-workflow documentation. Application and deployment code
+remain unchanged. README is a worker build input and package metadata, so
+candidate-image acceptance remains attributed to the original candidate
+commit, not to images rebuilt from the final publication source. Any such
+images require separate verification before production use.
+
+The repository owner approved finalization and publication of v0.9.1, subject
+to successful final source verification and GitHub CI. Tag creation, GitHub
+Release publication, and public archive verification remain pending at this
+publication-source checkpoint. Production promotion requires separate
+approval. The existing deployment and published v0.9.0 tag remain unchanged.
 
 ## v0.9.0 completed release gates.
 
