@@ -4,7 +4,7 @@ This file records notable changes to the CISA KEV Prioritization Dashboard.
 Live catalog counts and snapshot digests are intentionally excluded because
 they change whenever CISA updates the source feed.
 
-## [0.9.1]
+## [0.9.1] - 2026-09-11
 
 Corrective patch for deployment image selection. Publishing this source
 release does not upgrade an existing live deployment.

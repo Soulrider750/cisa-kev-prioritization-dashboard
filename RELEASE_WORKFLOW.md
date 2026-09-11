@@ -4,12 +4,12 @@ This checklist defines the review required before a version is committed,
 tagged, or published. No command in this repository automatically publishes
 the project.
 
-Current release review: v0.9.1 in progress
-Latest published release: v0.9.0
+Current release review: v0.9.1 completed
+Latest published release: v0.9.1
 
-Latest published release date: 2026-09-09
+Latest published release date: 2026-09-11 (UTC)
 
-Sections 1 through 8 retain the completed v0.9.0 record. Section 9 tracks the v0.9.1 review.
+Sections 1 through 8 retain the completed v0.9.0 record. Section 9 records the completed v0.9.1 source release.
 
 ## 1. Technical verification
 
@@ -106,7 +106,7 @@ raw host inventories, temporary paths, or changing catalog counts.
 - [x] Verify the public tag, release metadata, and downloadable source
   archives before closing the release record.
 
-## 9. v0.9.1 release review
+## 9. v0.9.1 release record
 
 - [x] Merge the corrective image-lock change through pull request #10.
 - [x] Confirm the merged fix passes main-branch offline verification and
@@ -123,9 +123,9 @@ raw host inventories, temporary paths, or changing catalog counts.
   merged candidate passes main-branch Offline verification and CodeQL.
 - [x] Obtain owner approval to finalize and publish v0.9.1, subject to the
   remaining verification gates.
-- [ ] Verify the final publication source and its main-branch checks.
-- [ ] Create the annotated v0.9.1 tag and publish its GitHub Release.
-- [ ] Verify the public tag, release metadata, and source archives.
+- [x] Verify the final publication source and its main-branch checks.
+- [x] Create the annotated v0.9.1 tag and publish its GitHub Release.
+- [x] Verify the public tag, release metadata, and source archives.
 
 The isolated runtime acceptance included a verifier-only correction for
 Docker's named-volume representation. Original failure evidence was retained,

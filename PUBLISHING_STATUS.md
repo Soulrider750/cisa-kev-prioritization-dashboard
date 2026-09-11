@@ -1,18 +1,19 @@
 # Publishing status
 
-This publication-source checkpoint records completed acceptance and owner
-approval before external tag, release, and archive verification. Historical
-publication dates below are not a claim that v0.9.1 has already been published.
+This post-publication record closes the verified v0.9.1 source release.
+Publication dates and verification timestamps in this record use UTC. The
+published tag retains its original publication-source checkpoint; this
+closeout updates the main-branch record without moving any release tag.
 
 Status: PUBLISHED
 
-Current public release: v0.9.0
-
-Release candidate: v0.9.1
+Current public release: v0.9.1
 
 Deployment status: LIVE
 
-v0.9.0 production promotion: BLOCKED pending a corrective patch release
+v0.9.0 production promotion: BLOCKED; superseded by corrective source release v0.9.1
+
+v0.9.1 production promotion: NOT PERFORMED; requires separate approval and verification
 
 Repository published: 2026-09-04
 
@@ -20,9 +21,13 @@ v0.9.0 published: 2026-09-09
 
 v0.9.0 release verified: 2026-09-09
 
+v0.9.1 published: 2026-09-11
+
+v0.9.1 release verified: 2026-09-11
+
 Live deployment verified: 2026-09-09
 
-Last reviewed: 2026-09-10
+Last reviewed: 2026-09-11
 
 The repository was first published on 2026-09-04 after the initial release
 passed local verification and GitHub CI across Python 3.11 through 3.14.
@@ -40,7 +45,7 @@ and continues operating with its previously verified image set. Direct
 production promotion of v0.9.0 remains blocked. The correction is recorded in
 the v0.9.1 changelog entry; the existing v0.9.0 tag will not be moved.
 
-## v0.9.1 candidate status
+## v0.9.1 release status
 
 Version 0.9.1 contains the corrective image-lock change merged through pull
 request #10. Before version preparation, the underlying fix passed the
@@ -85,11 +90,23 @@ candidate-image acceptance remains attributed to the original candidate
 commit, not to images rebuilt from the final publication source. Any such
 images require separate verification before production use.
 
-The repository owner approved finalization and publication of v0.9.1, subject
-to successful final source verification and GitHub CI. Tag creation, GitHub
-Release publication, and public archive verification remain pending at this
-publication-source checkpoint. Production promotion requires separate
-approval. The existing deployment and published v0.9.0 tag remain unchanged.
+The owner-approved final publication source passed offline verification and
+both main-branch workflows. The stable
+[v0.9.1 GitHub Release](https://github.com/Soulrider750/cisa-kev-prioritization-dashboard/releases/tag/v0.9.1)
+was published at `2026-09-11T00:31:00Z` from commit
+`d74ca9cd30288a5163eeea9d7f4757ce98893fee`. Its annotated tag object is
+`547c6cad625ef7cc476076f09e999d933aafa34f`.
+
+Independent public verification completed at
+`2026-09-11T00:32:24.438107Z`. It confirmed the annotated tag and target commit,
+public stable/latest release metadata, and both downloadable source archives.
+The ZIP and tar.gz archives each contained 55 files matching the tagged source.
+Download-specific archive checksums and operational evidence remain private.
+
+Source publication is complete. Production promotion requires separate
+approval and verification. The existing deployment and published v0.9.0 tag
+remain unchanged; this closeout does not establish v0.9.1 production or timer
+acceptance.
 
 ## v0.9.0 completed release gates.
 
