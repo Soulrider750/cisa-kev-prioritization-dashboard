@@ -106,18 +106,23 @@ The committed container contract requires:
 - read-only data access for the web origin; and
 - no host-published dashboard ports.
 
-The root-controlled `/etc/kev-dashboard/compose.env` file is also the
-production deployment lock. It contains the exact production volume name,
-the refresh and web image references, and the expected local SHA-256 image
-IDs. These values are deployment state rather than credentials, but the file
-remains outside Git and is writable only by root.
+The committed v0.9.1 deployment contract uses the root-controlled
+`/etc/kev-dashboard/compose.env` file as a production deployment lock. It
+contains the exact production volume name, the refresh and web image
+references, and their expected local SHA-256 image IDs. These values are
+deployment state rather than credentials; the file remains outside Git and
+is writable only by root.
 
-Before every scheduled refresh, the host wrapper parses that file as data; it
-never executes or sources its contents. The wrapper rejects malformed,
-unknown, duplicate, missing, or empty fields, verifies that both local image
-references resolve to the locked IDs, and confirms that the fully resolved
-Compose model selects the same images and production volume. Any disagreement
-stops the refresh before a container is created.
+Under that contract, the host wrapper parses the file as data, never as shell
+code. It rejects malformed, unknown, duplicate, missing, or empty fields,
+verifies both local image identities, and confirms that the resolved Compose
+model selects the locked images and volume before creating a refresh container.
+
+Production promotion of v0.9.1 has not yet been performed. The live system
+remains on its previously verified legacy configuration. Source publication
+and isolated candidate acceptance do not establish installed production or
+timer acceptance; see [PUBLISHING_STATUS.md](../PUBLISHING_STATUS.md) for the
+release/deployment boundary.
 
 The tunnel credential is stored outside the repository and mounted read-only as
 a file. It must never be placed in source control, Compose environment values,
@@ -214,10 +219,12 @@ one connector container. Host failure therefore remains a service-availability
 risk. Tunnel alerts are configured, but a separate external alert for refresh
 failure is future work.
 
-Automated release retention and a tested backup-and-restore procedure are not
-yet implemented. Until those controls are designed and rehearsed against a
-scratch volume, release cleanup and recovery remain deliberate manual review
-activities rather than automated claims.
+Manual encrypted off-host backup and isolated data/private-serving recovery
+were verified on 2026-09-15. See [Backup and recovery](BACKUP_RECOVERY.md) for
+the workflow, protection model, and acceptance limits. Automated backups,
+automated retention, clean-host image-archive import, and complete server
+recovery remain outstanding. Release cleanup remains an explicitly reviewed
+activity rather than an automated operation.
 
 ## References
 
