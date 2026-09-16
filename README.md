@@ -38,7 +38,9 @@ one-shot refresh worker -> validated versioned release
 
 The origin publishes no host port. Runtime design, monitoring, failure
 behavior, and recovery boundaries are documented in
-[docs/OPERATIONS.md](docs/OPERATIONS.md).
+[docs/OPERATIONS.md](docs/OPERATIONS.md). The tested manual off-host backup and
+isolated recovery workflow, including its limits, is documented in
+[docs/BACKUP_RECOVERY.md](docs/BACKUP_RECOVERY.md).
 
 ## Engineering case study
 

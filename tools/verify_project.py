@@ -46,6 +46,7 @@ REQUIRED_PATHS = (
     Path("deploy/systemd/kev-dashboard-refresh.timer"),
     Path("docs/CASE_STUDY.md"),
     Path("docs/OPERATIONS.md"),
+    Path("docs/BACKUP_RECOVERY.md"),
     Path("docs/images/live-dashboard-overview.jpg"),
     Path("tests/test_compose_contract.py"),
     Path("tests/test_systemd_contract.py"),
