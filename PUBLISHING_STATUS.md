@@ -1,9 +1,10 @@
 # Publishing status
 
-This post-publication record closes the verified v0.9.1 source release.
-Publication dates and verification timestamps in this record use UTC. The
-published tag retains its original publication-source checkpoint; this
-closeout updates the main-branch record without moving any release tag.
+This record tracks the verified v0.9.1 source release and the subsequent
+owner-confirmed production deployment. Publication dates and verification
+timestamps use UTC; the production milestone also includes its local time.
+The published tag retains its original publication-source checkpoint;
+documentation updates on main do not move release tags.
 
 Status: PUBLISHED
 
@@ -11,9 +12,11 @@ Current public release: v0.9.1
 
 Deployment status: LIVE
 
+Production version: v0.9.1 (owner-confirmed)
+
 v0.9.0 production promotion: BLOCKED; superseded by corrective source release v0.9.1
 
-v0.9.1 production promotion: NOT PERFORMED; requires separate approval and verification
+v0.9.1 production promotion: COMPLETED (owner-confirmed as of 2026-10-28 00:38 UTC)
 
 Repository published: 2026-09-04
 
@@ -25,9 +28,9 @@ v0.9.1 published: 2026-09-11
 
 v0.9.1 release verified: 2026-09-11
 
-Live deployment verified: 2026-09-09
+Initial live deployment verified: 2026-09-09
 
-Last reviewed: 2026-09-11
+Last reviewed: 2026-10-28
 
 The repository was first published on 2026-09-04 after the initial release
 passed local verification and GitHub CI across Python 3.11 through 3.14.
@@ -40,10 +43,11 @@ successfully.
 
 A post-publication, read-only production inventory found that the v0.9.0
 Compose image selection and the scheduled refresh wrapper's trusted image
-identity came from different constants. The live deployment was not changed
-and continues operating with its previously verified image set. Direct
-production promotion of v0.9.0 remains blocked. The correction is recorded in
-the v0.9.1 changelog entry; the existing v0.9.0 tag will not be moved.
+identity came from different constants. That inventory did not change the live
+deployment; it remained on the previously verified image set at that
+checkpoint. Direct production promotion of v0.9.0 remains blocked. The
+correction is recorded in the v0.9.1 changelog entry; the existing v0.9.0 tag
+will not be moved.
 
 ## v0.9.1 release status
 
@@ -103,10 +107,22 @@ public stable/latest release metadata, and both downloadable source archives.
 The ZIP and tar.gz archives each contained 55 files matching the tagged source.
 Download-specific archive checksums and operational evidence remain private.
 
-Source publication is complete. Production promotion requires separate
-approval and verification. The existing deployment and published v0.9.0 tag
-remain unchanged; this closeout does not establish v0.9.1 production or timer
-acceptance.
+Source publication is complete. The September source-release closeout did not
+change production or establish v0.9.1 production or timer acceptance. The
+subsequent production milestone is recorded separately below.
+
+## v0.9.1 production status
+
+The project owner confirmed that v0.9.1 is in production as of
+`2026-10-27 20:38 EDT` (`America/New_York`), equivalent to
+`2026-10-28 00:38 UTC`. This replaces the earlier pending-production status;
+the source release date remains 2026-09-11.
+
+This entry records owner confirmation, not a new runtime audit. It does not
+add verification of deployed image identities, timer execution, service health,
+backup freshness, or rollback acceptance. Earlier isolated candidate and
+source-release checks retain their original scope and provenance. Future
+production changes still require separate approval and verification.
 
 ## v0.9.0 completed release gates.
 
