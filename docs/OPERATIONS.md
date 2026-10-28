@@ -118,11 +118,13 @@ code. It rejects malformed, unknown, duplicate, missing, or empty fields,
 verifies both local image identities, and confirms that the resolved Compose
 model selects the locked images and volume before creating a refresh container.
 
-Production promotion of v0.9.1 has not yet been performed. The live system
-remains on its previously verified legacy configuration. Source publication
-and isolated candidate acceptance do not establish installed production or
-timer acceptance; see [PUBLISHING_STATUS.md](../PUBLISHING_STATUS.md) for the
-release/deployment boundary.
+The project owner confirmed v0.9.1 is in production as of
+`2026-10-27 20:38 EDT` (`America/New_York`), equivalent to
+`2026-10-28 00:38 UTC`. This status records owner confirmation, not a new
+runtime audit or new timer-acceptance evidence. Source publication and
+isolated candidate acceptance remain distinct from production verification;
+see [PUBLISHING_STATUS.md](../PUBLISHING_STATUS.md) for the deployment record
+and evidence boundaries.
 
 The tunnel credential is stored outside the repository and mounted read-only as
 a file. It must never be placed in source control, Compose environment values,

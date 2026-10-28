@@ -129,9 +129,20 @@ raw host inventories, temporary paths, or changing catalog counts.
 
 The isolated runtime acceptance included a verifier-only correction for
 Docker's named-volume representation. Original failure evidence was retained,
-and recovery passed without another live refresh. This acceptance does not
-establish v0.9.1 production deployment or systemd timer acceptance.
+and recovery passed without another live refresh. That acceptance alone did
+not establish v0.9.1 production deployment or systemd timer acceptance.
 
 Production promotion is a separate operational change. Completing this
 release checklist does not authorize replacing production configuration,
 images, credentials, data, or scheduling.
+
+## 10. v0.9.1 production milestone
+
+- [x] Record the owner's confirmation that v0.9.1 is in production as of
+  2026-10-27 20:38 EDT (America/New_York), equivalent to
+  2026-10-28 00:38 UTC.
+
+This milestone records deployment status, not a new runtime audit. It does not
+extend the earlier candidate or release checks to establish deployed image
+identities, timer execution, health, backup freshness, or rollback acceptance.
+See [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md) for the production record.
