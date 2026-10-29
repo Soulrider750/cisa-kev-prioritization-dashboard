@@ -51,10 +51,15 @@ REQUIRED_PATHS = (
     Path("tests/test_compose_contract.py"),
     Path("tests/test_systemd_contract.py"),
     Path("tests/test_release_contract.py"),
+    Path("kev_dashboard/search.py"),
+    Path("kev_dashboard/static/search.js"),
+    Path("tests/test_search_page.py"),
 )
 
 EXPECTED_OUTPUTS = {
     "index.html",
+    "search.html",
+    "search.js",
     "data/kev_snapshot.json",
     "data/metadata.json",
     "data/summary.json",
@@ -560,6 +565,10 @@ def check_offline_sample_build(
             output_directory
             / "index.html"
         )
+        search_path = (
+            output_directory
+            / "search.html"
+        )
 
         fixture_bytes = FIXTURE.read_bytes()
         snapshot_bytes = snapshot_path.read_bytes()
@@ -636,10 +645,26 @@ def check_offline_sample_build(
         if (
             "<html" not in report_text.casefold()
             or "CISA KEV" not in report_text
+            or 'href="search.html"' not in report_text
         ):
             record_failure(
                 failures,
                 "generated HTML report is incomplete",
+            )
+
+        search_text = search_path.read_text(
+            encoding="utf-8"
+        )
+
+        if (
+            "<title>Search CISA KEV Catalog</title>"
+            not in search_text
+            or 'href="index.html"' not in search_text
+            or 'src="search.js"' not in search_text
+        ):
+            record_failure(
+                failures,
+                "generated search page is incomplete",
             )
 
         expected_message = (

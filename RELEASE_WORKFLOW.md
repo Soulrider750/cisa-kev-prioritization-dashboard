@@ -4,12 +4,14 @@ This checklist defines the review required before a version is committed,
 tagged, or published. No command in this repository automatically publishes
 the project.
 
-Current release review: v0.9.1 completed
+Current release review: catalog search candidate, GitHub preparation
 Latest published release: v0.9.1
 
 Latest published release date: 2026-09-11 (UTC)
 
-Sections 1 through 8 retain the completed v0.9.0 record. Section 9 records the completed v0.9.1 source release.
+Sections 1 through 8 retain the completed v0.9.0 record. Section 9 records
+the completed v0.9.1 source release. Section 10 records the owner-confirmed
+production milestone. Section 11 tracks the unreleased catalog search work.
 
 ## 1. Technical verification
 
@@ -146,3 +148,44 @@ This milestone records deployment status, not a new runtime audit. It does not
 extend the earlier candidate or release checks to establish deployed image
 identities, timer execution, health, backup freshness, or rollback acceptance.
 See [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md) for the production record.
+
+## 11. Catalog search candidate — GitHub preparation
+
+This candidate builds on the v0.9.1 source tree. On October 29, 2026, the
+project owner confirmed that the local preview and review package pass their
+review and asked for GitHub merge preparation. A source merge, versioned
+release, and production promotion remain separate steps. The public and
+production version remains v0.9.1.
+
+- [x] Generate and validate the dashboard and search pages locally from a
+  complete catalog snapshot.
+- [x] Run the complete offline verifier and `git diff --check` after the code
+  and documentation updates.
+- [x] Check CVE, vendor, product, ransomware-use, CWE, date, pagination,
+  empty results, retry, navigation, and Notes links in a local browser.
+- [x] Check that the full-catalog CSV link is visible and clearly labeled,
+  keyboard focus reaches the filters, download link, details, and Notes links,
+  and 320px and 375px layouts have no horizontal overflow.
+- [x] Review the complete source diff, documentation, and code package with
+  the project owner.
+- [x] Prepare the exact local feature branch and commit after the final local
+  gate.
+- [ ] Confirm explicit authorization for the GitHub push and merge actions
+  before changing the remote repository.
+- [ ] Open a pull request and confirm current Python 3.11–3.14, CodeQL, and
+  isolated Web origin (Docker) checks before any protected-main merge.
+- [ ] Decide the next version before building versioned candidate images or
+  publishing a GitHub Release.
+- [ ] For a future release, verify the exact candidate in CI and isolated
+  Docker/NGINX runtime checks, including the search page, same-origin catalog
+  request, Content Security Policy, and preservation of the last-known-good
+  release.
+- [ ] Obtain separate approval before production promotion. Follow the
+  private-origin, Cloudflare Tunnel, and public-hostname checks in
+  [docs/OPERATIONS.md](docs/OPERATIONS.md).
+
+The October 29 local browser checks used Python's HTTP server. This
+workstation has no Docker or NGINX runtime. The pull request's isolated
+Web origin (Docker) job uses synthetic data on a GitHub-hosted runner;
+versioned candidate and public tunnel checks apply to a future approved
+production release.

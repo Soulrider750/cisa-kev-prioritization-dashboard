@@ -18,6 +18,8 @@ from .export import VULNERABILITY_FIELDS
 _REQUIRED_FILES = frozenset(
     {
         Path("index.html"),
+        Path("search.html"),
+        Path("search.js"),
         Path("data/kev_snapshot.json"),
         Path("data/metadata.json"),
         Path("data/summary.json"),
@@ -433,6 +435,55 @@ def validate_build(
         raise BuildValidationError(
             "report refresh timestamp does "
             "not match metadata"
+        )
+
+    if 'href="search.html"' not in report_text:
+        raise BuildValidationError(
+            "dashboard does not link to search page"
+        )
+
+    search_relative = Path("search.html")
+    search_bytes = _read_bytes(
+        output_dir / search_relative,
+        search_relative,
+    )
+
+    try:
+        search_text = search_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        raise BuildValidationError(
+            "invalid UTF-8 file: search.html"
+        ) from None
+
+    if (
+        not search_text.startswith("<!doctype html>")
+        or "<title>Search CISA KEV Catalog</title>"
+        not in search_text
+        or not search_text.rstrip().endswith("</html>")
+        or 'href="index.html"' not in search_text
+        or '<script src="search.js" defer></script>'
+        not in search_text
+    ):
+        raise BuildValidationError(
+            "search page is not a complete document"
+        )
+
+    script_relative = Path("search.js")
+    script_bytes = _read_bytes(
+        output_dir / script_relative,
+        script_relative,
+    )
+
+    try:
+        script_text = script_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        raise BuildValidationError(
+            "invalid UTF-8 file: search.js"
+        ) from None
+
+    if not script_text.strip():
+        raise BuildValidationError(
+            "search script is empty"
         )
 
     return None

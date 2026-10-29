@@ -72,6 +72,12 @@ class PipelineTests(unittest.TestCase):
             self.assertTrue(
                 result.report_path.is_file()
             )
+            self.assertTrue(
+                (output_dir / "search.html").is_file()
+            )
+            self.assertTrue(
+                (output_dir / "search.js").is_file()
+            )
             self.assertEqual(
                 len(result.data_paths),
                 10,

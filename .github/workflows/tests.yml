@@ -47,3 +47,106 @@ jobs:
 
       - name: Run offline release verification
         run: python tools/verify_project.py
+
+  web-smoke:
+    name: Web origin (Docker)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Build candidate images
+        run: |
+          docker build --file Dockerfile --tag kev-dashboard-refresh:ci .
+          docker build --file Dockerfile.web --tag kev-dashboard-web:ci .
+
+      - name: Exercise isolated web origin
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          volume="kev-ci-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          container="kev-ci-web-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          base_url="http://127.0.0.1:18080"
+
+          cleanup() {
+            docker rm --force "$container" >/dev/null 2>&1 || true
+            docker volume rm "$volume" >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker volume create "$volume" >/dev/null
+
+          docker run --rm \
+            --network none \
+            --user 10001:10001 \
+            --read-only \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=10001,gid=10001 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --mount "type=volume,source=${volume},target=/srv/kev-dashboard" \
+            --mount "type=bind,source=${PWD}/tests/fixtures,target=/fixtures,readonly" \
+            --entrypoint python \
+            kev-dashboard-refresh:ci \
+            -m kev_dashboard \
+            --input /fixtures/kev_sample.json \
+            --as-of 2026-09-03 \
+            --output-dir /srv/kev-dashboard/current
+
+          docker run --detach --rm \
+            --name "$container" \
+            --user 10001:10001 \
+            --read-only \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=10001,gid=10001 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --pids-limit 64 \
+            --memory 128m \
+            --cpus 0.50 \
+            --mount "type=volume,source=${volume},target=/srv/kev-dashboard,readonly" \
+            --publish 127.0.0.1:18080:8080 \
+            kev-dashboard-web:ci >/dev/null
+
+          ready=false
+          for attempt in {1..20}; do
+            if curl -fsS "$base_url/index.html" \
+              --output /dev/null 2>/dev/null; then
+              ready=true
+              break
+            fi
+            sleep 1
+          done
+          if [[ "$ready" != true ]]; then
+            docker logs "$container"
+            exit 1
+          fi
+
+          docker exec "$container" /usr/sbin/nginx -t
+
+          curl -fsS "$base_url/index.html" \
+            --output "$RUNNER_TEMP/index.html"
+          curl -fsS -D "$RUNNER_TEMP/search.headers" \
+            "$base_url/search.html" \
+            --output "$RUNNER_TEMP/search.html"
+          curl -fsS "$base_url/search.js" \
+            --output "$RUNNER_TEMP/search.js"
+          curl -fsS "$base_url/data/kev_snapshot.json" \
+            --output "$RUNNER_TEMP/kev_snapshot.json"
+          curl -fsS "$base_url/data/vulnerabilities.csv" \
+            --output "$RUNNER_TEMP/vulnerabilities.csv"
+
+          test -s "$RUNNER_TEMP/search.js"
+          test -s "$RUNNER_TEMP/kev_snapshot.json"
+          test -s "$RUNNER_TEMP/vulnerabilities.csv"
+          grep -Fq 'href="search.html"' "$RUNNER_TEMP/index.html"
+          grep -Fq 'src="search.js"' "$RUNNER_TEMP/search.html"
+          grep -Fq 'Download full catalog CSV' "$RUNNER_TEMP/search.html"
+          grep -Fq 'data/kev_snapshot.json' "$RUNNER_TEMP/search.js"
+          grep -Fiq "Content-Security-Policy: default-src 'none'; script-src 'self'; connect-src 'self'" \
+            "$RUNNER_TEMP/search.headers"
+          grep -Fiq 'Cache-Control: no-store' \
+            "$RUNNER_TEMP/search.headers"

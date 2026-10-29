@@ -261,6 +261,22 @@ class ReportTests(unittest.TestCase):
         self.assertNotIn("<link", html)
         self.assertNotIn(" src=", html)
 
+    def test_dashboard_links_to_full_catalog_search(self) -> None:
+        html = build_report_html(self.analysis)
+
+        self.assertIn(
+            '<a href="search.html">Search all KEV entries</a>',
+            html,
+        )
+        self.assertIn(
+            '<a href="search.html">Search the complete catalog</a>',
+            html,
+        )
+        self.assertIn(
+            '<a href="data/vulnerabilities.csv">download the normalized',
+            html,
+        )
+
     def test_invalid_display_limits_are_rejected(
         self,
     ) -> None:

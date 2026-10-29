@@ -12,6 +12,7 @@ from .export import export_build
 from .fetch import CatalogDocument
 from .models import parse_catalog
 from .report import render_report
+from .search import render_search_page
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,6 +59,8 @@ def build_dashboard(
         queue_limit=queue_limit,
         retrieved_at=document.retrieved_at,
     )
+
+    render_search_page(output_dir)
 
     build_validation.validate_build(
         output_dir

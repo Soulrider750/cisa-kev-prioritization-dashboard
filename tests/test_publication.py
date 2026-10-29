@@ -32,6 +32,7 @@ from kev_dashboard.publication import (
     publish_candidate,
 )
 from kev_dashboard.report import render_report
+from kev_dashboard.search import render_search_page
 
 
 FIXTURE_PATH = (
@@ -135,6 +136,8 @@ class PublicationTests(unittest.TestCase):
             candidate_path / "index.html",
             retrieved_at=document.retrieved_at,
         )
+
+        render_search_page(candidate_path)
 
         return candidate_path
 

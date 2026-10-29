@@ -61,7 +61,7 @@ Portfolio highlights include:
 
 ## Purpose
 
-The project transforms CISA KEV data into a reproducible dashboard containing catalog trends and a transparent vulnerability review queue.
+The project transforms CISA KEV data into a reproducible dashboard containing catalog trends and a transparent vulnerability review queue. This source tree also generates a separate search page for every record in the same validated catalog snapshot.
 
 It demonstrates:
 
@@ -70,7 +70,7 @@ It demonstrates:
 - deterministic analysis;
 - source provenance and SHA-256 integrity evidence;
 - safe CSV and HTML generation;
-- accessible, self-contained reporting;
+- accessible, self-contained dashboard reporting and browser-based catalog search;
 - automated testing across supported Python versions;
 - an offline release-verification workflow; and
 - a hardened container deployment with scheduled, last-known-good refreshes.
@@ -95,7 +95,17 @@ python3 -m kev_dashboard \
   --output-dir build/sample
 ```
 
-Open `build/sample/index.html` in a browser.
+Serve the generated files locally so the search page can load its JSON data:
+
+```bash
+python3 -m http.server 8000 \
+  --bind 127.0.0.1 \
+  --directory build/sample
+```
+
+Open `http://127.0.0.1:8000/` for the dashboard and
+`http://127.0.0.1:8000/search.html` for the search page. Stop the server with
+Ctrl+C. The fixture records are fictional.
 
 ### Build from current CISA data
 
@@ -104,7 +114,7 @@ python3 -m kev_dashboard \
   --output-dir build/live
 ```
 
-The live command retrieves CISA's approved KEV JSON feed, validates the catalog, preserves the original snapshot, records its SHA-256 digest, exports normalized data, and generates a self-contained HTML dashboard.
+The live command retrieves CISA's approved KEV JSON feed, validates the catalog, preserves the original snapshot, records its SHA-256 digest, exports normalized data, and generates the dashboard and search pages. The search page loads the preserved snapshot from the same origin; it does not query CISA directly from the browser.
 
 Live results change as CISA updates the catalog.
 
@@ -133,6 +143,8 @@ A successful build contains:
 
 ```text
 index.html
+search.html
+search.js
 data/
 ├── kev_snapshot.json
 ├── metadata.json
@@ -147,6 +159,22 @@ data/
 ```
 
 Generated output is excluded from Git because it can be reproduced from the source snapshot and application code.
+
+The search page reads every record in `data/kev_snapshot.json`. Use **Search
+all catalog fields** to find text in a CVE, description, required action,
+Notes, or another catalog field. CVE ID, vendor, product, and CWE filters use
+case-insensitive partial matches. The date fields set an inclusive range on
+the date the entry was added to KEV. Filters apply together, and results
+update as you type.
+
+Results are sorted by date added, newest first, with 25 entries per page.
+Expand **View catalog details** for the full description, required action,
+forensic triage, CWE, and Notes. HTTP and HTTPS URLs in Notes open their
+information pages in a new tab. **Download full catalog CSV** includes every
+entry, regardless of the filters on the page. The ransomware-use filter has
+**Known** and **Unknown** values; Unknown does not mean that ransomware use
+has been ruled out. Search is based on the current published snapshot, not an
+organization-specific asset or risk assessment.
 
 ## Testing
 

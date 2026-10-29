@@ -840,6 +840,8 @@ class ComposeContractTests(unittest.TestCase):
             "no-store",
             "Content-Security-Policy",
             "default-src 'none'",
+            "script-src 'self'",
+            "connect-src 'self'",
             "frame-ancestors 'none'",
             "Cross-Origin-Opener-Policy",
             "Cross-Origin-Resource-Policy",
@@ -855,6 +857,20 @@ class ComposeContractTests(unittest.TestCase):
         for fragment in required_fragments:
             with self.subTest(fragment=fragment):
                 self.assertIn(fragment, compact)
+
+        csp_headers = re.findall(
+            r'(?m)^\s*add_header Content-Security-Policy "([^"]+)" always;$',
+            text,
+        )
+        self.assertEqual(len(csp_headers), 1)
+        csp_directives = {
+            directive[0]: directive[1:]
+            for part in csp_headers[0].split(";")
+            if (directive := part.strip().split())
+        }
+        self.assertEqual(csp_directives["default-src"], ["'none'"])
+        self.assertEqual(csp_directives["script-src"], ["'self'"])
+        self.assertEqual(csp_directives["connect-src"], ["'self'"])
 
         self.assertEqual(
             compact.count(

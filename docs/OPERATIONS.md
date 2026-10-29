@@ -15,8 +15,10 @@ not affiliated with or endorsed by CISA and does not provide an availability
 service-level agreement.
 
 The site is intentionally public and does not contain user accounts, sessions,
-forms, or organization-specific asset data. It remains a triage and workflow
-aid rather than an organizational risk score.
+or organization-specific asset data. A release with the search page filters
+the public catalog in the visitor's browser; it does not add a search API.
+The site remains a triage and workflow aid rather than an organizational risk
+score.
 
 ## Architecture and trust boundaries
 
@@ -65,7 +67,8 @@ The refresh service is a one-shot operation:
 2. Retrieve the catalog only from the approved CISA HTTPS source.
 3. Validate and normalize the complete catalog.
 4. Create a private candidate directory.
-5. Generate the snapshot, metadata, summaries, CSV exports, and HTML report.
+5. Generate the snapshot, metadata, summaries, CSV exports, dashboard page,
+   and, for releases with search, the separate search page and script.
 6. Validate the complete candidate build and deployment policy.
 7. Acquire the publication lock and move the candidate into a versioned
    release directory.
@@ -135,6 +138,12 @@ static files, and adds restrictive browser security headers. Cloudflare forces
 the public hostname to HTTPS and bypasses edge caching so the active release is
 served without a stale dashboard copy.
 
+The search page requests `data/kev_snapshot.json` from the same hostname as
+the page and filters all catalog records in the browser. It needs the NGINX
+Content Security Policy to permit only same-origin scripts and data requests;
+the dashboard page retains its more restrictive policy. No new container,
+database, host port, or tunnel route is required.
+
 ## Provenance and public verification
 
 Every successful build preserves the retrieved CISA snapshot and publishes
@@ -194,6 +203,15 @@ Deployment changes follow the same fail-closed sequence as the original
 installation: verify source and image identities, validate the Compose model,
 stage a versioned configuration, confirm private health, activate it, test the
 public hostname, and only then accept the change.
+
+For a release with search, the acceptance checks must include the generated
+`search.html` and `search.js` files, a successful same-origin request for
+`data/kev_snapshot.json`, browser filtering across the full catalog,
+pagination, the full-catalog CSV link, HTTP and HTTPS Notes links with the
+expected destinations and new-tab behavior, and the expected Content Security
+Policy. Confirm that malformed or unsafe Notes text stays literal. The new
+page and NGINX policy require verified replacement refresh-worker and
+web-origin images before activation.
 
 During an image upgrade, stop the refresh timer and prove that no refresh is
 running before replacing the deployment lock. Install the complete lock file
