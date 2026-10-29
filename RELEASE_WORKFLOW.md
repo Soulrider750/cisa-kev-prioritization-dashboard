@@ -172,8 +172,8 @@ production version remains v0.9.1.
   gate.
 - [ ] Confirm explicit authorization for the GitHub push and merge actions
   before changing the remote repository.
-- [ ] Open a pull request and confirm current Python 3.11–3.14 and CodeQL
-  checks before any protected-main merge.
+- [ ] Open a pull request and confirm current Python 3.11–3.14, CodeQL, and
+  isolated Web origin (Docker) checks before any protected-main merge.
 - [ ] Decide the next version before building versioned candidate images or
   publishing a GitHub Release.
 - [ ] For a future release, verify the exact candidate in CI and isolated
@@ -185,6 +185,7 @@ production version remains v0.9.1.
   [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 The October 29 local browser checks used Python's HTTP server. This
-workstation has no Docker or NGINX runtime, so the isolated runtime check
-remains open until a Docker-capable host is available. The public tunnel
-check applies only after an approved production deployment.
+workstation has no Docker or NGINX runtime. The pull request's isolated
+Web origin (Docker) job uses synthetic data on a GitHub-hosted runner;
+versioned candidate and public tunnel checks apply to a future approved
+production release.
