@@ -767,6 +767,8 @@ class ContainerContractTests(unittest.TestCase):
                 "!kev_dashboard/",
                 "!kev_dashboard/*.py",
                 "!kev_dashboard/**/*.py",
+                "!kev_dashboard/static/",
+                "!kev_dashboard/static/search.js",
                 "!deploy/",
                 "!deploy/nginx.conf",
             ),

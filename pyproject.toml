@@ -42,3 +42,6 @@ version = { attr = "kev_dashboard.__version__" }
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["kev_dashboard*"]
+
+[tool.setuptools.package-data]
+kev_dashboard = ["static/*.js"]

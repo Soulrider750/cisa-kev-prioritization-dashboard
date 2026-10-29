@@ -4,6 +4,30 @@ This file records notable changes to the CISA KEV Prioritization Dashboard.
 Live catalog counts and snapshot digests are intentionally excluded because
 they change whenever CISA updates the source feed.
 
+## Unreleased
+
+### Added
+
+- A separate search page for every entry in the validated KEV snapshot, with
+  combined text, CVE, vendor, product, ransomware-use, CWE, and date-added
+  filters, result counts, pagination, and expandable catalog details.
+- Clickable HTTP and HTTPS references in each entry's Notes. Links open in a
+  new tab while the surrounding Notes text remains visible.
+- A full-catalog CSV download link on the search page, labeled to distinguish
+  it from the filtered results.
+
+### Changed
+
+- Added dashboard navigation to the search page and a working CSV download
+  link. Build validation, release verification, package data, and Docker build
+  inputs now include the search assets.
+- Permitted same-origin scripts and catalog requests in the NGINX Content
+  Security Policy for search. The dashboard document retains its stricter
+  policy.
+
+The project owner reviewed this work locally on October 29, 2026. It has not
+been published or deployed; the public and production version remains v0.9.1.
+
 ## [0.9.1] - 2026-09-11
 
 Corrective patch for deployment image selection. Publishing this source

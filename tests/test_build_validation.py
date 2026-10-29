@@ -18,6 +18,7 @@ from kev_dashboard.export import export_build
 from kev_dashboard.fetch import load_local_json
 from kev_dashboard.models import parse_catalog
 from kev_dashboard.report import render_report
+from kev_dashboard.search import render_search_page
 
 
 FIXTURE_PATH = (
@@ -81,6 +82,8 @@ class BuildValidationTests(unittest.TestCase):
             retrieved_at=self.document.retrieved_at,
         )
 
+        render_search_page(self.output_dir)
+
     def test_complete_generated_build_is_accepted(
         self,
     ) -> None:
@@ -119,6 +122,29 @@ class BuildValidationTests(unittest.TestCase):
                 "missing required file: "
                 r"data/metadata\.json"
             ),
+        ):
+            validate_build(self.output_dir)
+
+    def test_missing_search_script_is_rejected(self) -> None:
+        (self.output_dir / "search.js").unlink()
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            r"missing required file: search\.js",
+        ):
+            validate_build(self.output_dir)
+
+    def test_search_page_must_reference_script(self) -> None:
+        search_path = self.output_dir / "search.html"
+        html = search_path.read_text(encoding="utf-8")
+        search_path.write_text(
+            html.replace('src="search.js"', 'src="missing.js"'),
+            encoding="utf-8",
+        )
+
+        with self.assertRaisesRegex(
+            BuildValidationError,
+            "search page is not a complete document",
         ):
             validate_build(self.output_dir)
 

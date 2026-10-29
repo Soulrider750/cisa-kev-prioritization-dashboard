@@ -478,6 +478,27 @@ def build_report_html(
       margin-bottom: 28px;
     }}
 
+    .site-nav {{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin: 0 0 28px;
+    }}
+
+    .site-nav a {{
+      display: inline-block;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-decoration: none;
+    }}
+
+    .site-nav a:hover,
+    .site-nav a:focus-visible {{
+      background: var(--panel-raised);
+      text-decoration: underline;
+    }}
+
     h1 {{
       max-width: 900px;
       margin: 8px 0 16px;
@@ -721,6 +742,11 @@ def build_report_html(
       </p>
     </header>
 
+    <nav class="site-nav" aria-label="Site pages">
+      <a href="index.html" aria-current="page">Dashboard</a>
+      <a href="search.html">Search all KEV entries</a>
+    </nav>
+
     <aside class="notice">
       <strong>Interpretation:</strong>
       This ordering is a workflow aid, not a universal risk or
@@ -751,8 +777,9 @@ def build_report_html(
         Displaying the first
         {min(queue_limit, len(analysis["vulnerabilities"]))}
         of {len(analysis["vulnerabilities"]):,} records.
-        The complete normalized dataset is available in
-        <code>data/vulnerabilities.csv</code>.
+        <a href="search.html">Search the complete catalog</a>, or
+        <a href="data/vulnerabilities.csv">download the normalized
+        dataset as CSV</a>.
       </p>
 
       <div class="table-scroll queue">
