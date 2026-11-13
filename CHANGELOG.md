@@ -4,9 +4,9 @@ This file records notable changes to the CISA KEV Prioritization Dashboard.
 Live catalog counts and snapshot digests are intentionally excluded because
 they change whenever CISA updates the source feed.
 
-## [Unreleased] - v0.10.0 candidate
+## [0.10.0] - 2026-11-13
 
-This candidate has not been published or deployed.
+Source publication and production image replacement are separate steps.
 
 ### Added
 
@@ -32,8 +32,8 @@ This candidate has not been published or deployed.
 - Reject live feed redirects before opening a follow-up URL.
 
 The project owner reviewed the search feature locally on October 29, 2026.
-These source changes have not been published as a versioned release or
-deployed; the public and production version remains v0.9.1.
+The latest owner-confirmed production version is v0.9.1. New worker and web
+images require a separate controlled cutover.
 
 ## [0.9.1] - 2026-09-11
 
@@ -92,7 +92,7 @@ release does not upgrade an existing live deployment.
   offline demonstration, auditable JSON and CSV exports, self-contained HTML
   report, and Python 3.11 through 3.14 verification workflow.
 
-[Unreleased]: https://github.com/Soulrider750/cisa-kev-prioritization-dashboard/compare/v0.9.1...HEAD
+[0.10.0]: https://github.com/Soulrider750/cisa-kev-prioritization-dashboard/compare/v0.9.1...v0.10.0
 [0.9.1]: https://github.com/Soulrider750/cisa-kev-prioritization-dashboard/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/Soulrider750/cisa-kev-prioritization-dashboard/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/Soulrider750/cisa-kev-prioritization-dashboard/releases/tag/v0.8.0

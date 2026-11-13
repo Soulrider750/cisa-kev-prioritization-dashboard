@@ -4,15 +4,15 @@ This checklist defines the review required before a version is committed,
 tagged, or published. No command in this repository automatically publishes
 the project.
 
-Current release review: v0.10.0 in progress
+Current release review: v0.10.0 accepted for source publication
 Latest published release: v0.9.1
 
 Latest published release date: 2026-09-11 (UTC)
 
 Sections 1 through 8 retain the completed v0.9.0 record. Section 9 records
 the completed v0.9.1 source release. Section 10 records the owner-confirmed
-production milestone. Section 11 tracks the v0.10.0 catalog search and
-feed-redirect candidate.
+production milestone. Section 11 tracks the accepted v0.10.0 source candidate
+and its separate production boundary.
 
 ## 1. Technical verification
 
@@ -179,22 +179,28 @@ separate steps. The public and production version remains v0.9.1.
   Web origin (Docker) checks passed on the reviewed head.
 - [x] Review the feed-redirect guard through separate protected pull request
   #17 with current checks before including it in a versioned release.
-- [ ] Include the live-feed redirect guard and its no-follow-up-request tests
-  in the versioned candidate; verify the refresh-worker image uses that source.
+- [x] Include the live-feed redirect guard and its no-follow-up-request tests
+  in the versioned candidate; verify the built refresh-worker image runs them
+  against the installed wheel.
 - [x] Select v0.10.0 for the new search page and redirect guard before
   building versioned candidate images or publishing a GitHub Release.
-- [ ] Run the no-follow-up-request tests inside the built refresh-worker image
+- [x] Run the no-follow-up-request tests inside the built refresh-worker image
   so the installed wheel is checked before release.
-- [ ] Verify the v0.10.0 candidate in CI and isolated
-  Docker/NGINX runtime checks, including the search page, same-origin catalog
-  request, Content Security Policy, and preservation of the last-known-good
-  release.
+- [x] Verify the v0.10.0 candidate in Python 3.11–3.14 CI, CodeQL, and
+  isolated Docker/NGINX checks for the search page, same-origin catalog
+  request, and Content Security Policy. The offline tests verify preservation
+  of the last-known-good release on refresh failures.
+- [x] Merge the accepted candidate through protected pull request #18 as
+  `f660e3b`, confirm its tree matches the reviewed head, and confirm main CI
+  and CodeQL pass.
+- [ ] Tag the final publication commit as v0.10.0, publish the GitHub Release,
+  and verify the public tag, release metadata, and source archives.
 - [ ] Obtain separate approval before production promotion. Follow the
   private-origin, Cloudflare Tunnel, and public-hostname checks in
   [docs/OPERATIONS.md](docs/OPERATIONS.md).
 
 The October 29 local browser checks used Python's HTTP server. This
-workstation has no Docker or NGINX runtime. The pull request's isolated
-Web origin (Docker) job uses synthetic data on a GitHub-hosted runner;
-versioned candidate and public tunnel checks apply to a future approved
-production release.
+workstation has no Docker or NGINX runtime. Pull request #18 ran the installed
+worker's redirect tests and the synthetic-data web-origin checks in Docker on
+a GitHub-hosted Ubuntu runner. Production image identity, backup, timer, and
+public tunnel checks remain part of the separately approved host cutover.

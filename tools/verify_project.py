@@ -54,6 +54,7 @@ REQUIRED_PATHS = (
     Path("kev_dashboard/search.py"),
     Path("kev_dashboard/static/search.js"),
     Path("tests/test_search_page.py"),
+    Path("tests/worker_image_acceptance.py"),
 )
 
 EXPECTED_OUTPUTS = {

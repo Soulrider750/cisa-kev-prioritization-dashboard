@@ -1,8 +1,9 @@
 # Publishing status
 
-This record tracks the verified v0.9.1 source release and the subsequent
-owner-confirmed production deployment. Publication dates and verification
-timestamps use UTC; the production milestone also includes its local time.
+This record tracks v0.10.0 source-release preparation, the verified v0.9.1
+source release, and the owner-confirmed production deployment. Publication
+dates and verification timestamps use UTC; the production milestone also
+includes its local time.
 The published tag retains its original publication-source checkpoint;
 documentation updates on main do not move release tags.
 
@@ -10,7 +11,7 @@ Status: PUBLISHED
 
 Current public release: v0.9.1
 
-Release candidate: v0.10.0 (in preparation)
+Release candidate: v0.10.0 (accepted; source publication pending)
 
 Deployment status: LIVE
 
@@ -34,15 +35,27 @@ Initial live deployment verified: 2026-09-09
 
 Last reviewed: 2026-11-13
 
-## v0.10.0 candidate status
+## v0.10.0 source-release preparation
 
 The candidate combines the catalog search page and the live-feed redirect
 guard, both merged to public `main`. The guard passed Python 3.11 through 3.14,
 CodeQL, and Docker web-origin checks in pull request #17 on 2026-11-13.
-The v0.10.0 candidate has not been merged, tagged, published, or deployed.
-Its own GitHub checks and isolated image acceptance remain pending. The
-public and production release remains v0.9.1 until separately verified
-changes occur.
+
+The exact v0.10.0 candidate head,
+`8db4aeccb9bc13beb8ce067f75cdf2b825b22f19`, passed 194 offline tests on
+each supported Python version, CodeQL, and the isolated Docker web-origin job
+in pull request #18. That job built both images, ran the redirect tests against
+the installed worker wheel without network access, and checked the NGINX
+origin's search assets, catalog endpoint, CSV, and security headers. A local
+live build from the approved CISA feed also passed candidate validation.
+Pull request #18 merged as `f660e3bc96913676ae6298cfb55d3e843da1d49c`;
+its Git tree matches the accepted candidate head. The merged main commit
+passed its own offline verification and CodeQL workflows.
+
+The v0.10.0 source is accepted for publication but has not yet been tagged or
+released. The latest owner-confirmed production version is v0.9.1. The
+production image identities, backup freshness, timer result, and rollback
+readiness require a host check before image replacement.
 
 The repository was first published on 2026-09-04 after the initial release
 passed local verification and GitHub CI across Python 3.11 through 3.14.
