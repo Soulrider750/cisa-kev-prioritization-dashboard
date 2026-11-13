@@ -84,9 +84,9 @@ connect.
 
 The parser rejects malformed catalog structures, invalid field types, invalid
 dates, duplicate identifiers, and inconsistent source counts before analysis.
-The live fetcher uses a bounded request, revalidates the final destination
-after a redirect, limits response size, requires HTTPS, and permits only the
-approved CISA source locations.
+The live fetcher uses a bounded request, rejects redirects before opening a
+follow-up URL, rechecks the response source, requires HTTPS, and permits only
+the approved CISA source locations.
 
 This establishes a clear trust boundary: externally supplied data does not
 reach the analysis or rendering stages until it satisfies the documented

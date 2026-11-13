@@ -149,13 +149,14 @@ extend the earlier candidate or release checks to establish deployed image
 identities, timer execution, health, backup freshness, or rollback acceptance.
 See [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md) for the production record.
 
-## 11. Catalog search candidate — GitHub preparation
+## 11. Catalog search and feed-redirect release preparation
 
 This candidate builds on the v0.9.1 source tree. On October 29, 2026, the
 project owner confirmed that the local preview and review package pass their
-review and asked for GitHub merge preparation. A source merge, versioned
-release, and production promotion remain separate steps. The public and
-production version remains v0.9.1.
+review. The search source was merged through protected pull request #16 as
+`31ed62a`. The feed-redirect guard is being prepared for the same future
+versioned release. Versioned release and production promotion remain separate
+steps. The public and production version remains v0.9.1.
 
 - [x] Generate and validate the dashboard and search pages locally from a
   complete catalog snapshot.
@@ -170,10 +171,14 @@ production version remains v0.9.1.
   the project owner.
 - [x] Prepare the exact local feature branch and commit after the final local
   gate.
-- [ ] Confirm explicit authorization for the GitHub push and merge actions
-  before changing the remote repository.
-- [ ] Open a pull request and confirm current Python 3.11–3.14, CodeQL, and
-  isolated Web origin (Docker) checks before any protected-main merge.
+- [x] Confirm explicit authorization for the GitHub push and merge actions
+  for pull request #16 before changing the remote repository.
+- [x] Merge pull request #16 after its Python 3.11–3.14, CodeQL, and isolated
+  Web origin (Docker) checks passed on the reviewed head.
+- [ ] Review the feed-redirect guard through a separate protected pull request
+  with current checks before including it in a versioned release.
+- [ ] Include the live-feed redirect guard and its no-follow-up-request tests
+  in the versioned candidate; verify the refresh-worker image uses that source.
 - [ ] Decide the next version before building versioned candidate images or
   publishing a GitHub Release.
 - [ ] For a future release, verify the exact candidate in CI and isolated

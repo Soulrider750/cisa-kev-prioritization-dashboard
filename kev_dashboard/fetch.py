@@ -8,10 +8,14 @@ from datetime import datetime, timezone
 from hashlib import sha256
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, NoReturn
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
-from urllib.request import Request, urlopen
+from urllib.request import (
+    HTTPRedirectHandler,
+    Request,
+    build_opener,
+)
 
 from . import __version__
 
@@ -37,6 +41,24 @@ USER_AGENT = (
 
 class CatalogLoadError(ValueError):
     """Raised when a KEV source cannot be safely loaded."""
+
+
+class _RejectFeedRedirects(HTTPRedirectHandler):
+    """Stop a feed redirect before opening its destination."""
+
+    def redirect_request(
+        self,
+        request: Request,
+        response: Any,
+        code: int,
+        message: str,
+        headers: Any,
+        new_url: str,
+    ) -> NoReturn:
+        response.close()
+        raise CatalogLoadError(
+            "feed redirects are not permitted"
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -205,14 +227,18 @@ def fetch_live_json(
     )
 
     try:
-        with urlopen(
+        opener = build_opener(
+            _RejectFeedRedirects()
+        )
+
+        with opener.open(
             request,
             timeout=timeout,
         ) as response:
             final_url = response.geturl()
 
-            # urllib follows redirects automatically. Validate the final
-            # destination so an approved URL cannot redirect elsewhere.
+            # Keep the response-source check even though redirects are
+            # rejected before another request is opened.
             _validate_feed_url(
                 final_url,
                 allowed_hosts,

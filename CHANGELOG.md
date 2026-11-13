@@ -25,8 +25,13 @@ they change whenever CISA updates the source feed.
   Security Policy for search. The dashboard document retains its stricter
   policy.
 
-The project owner reviewed this work locally on October 29, 2026. It has not
-been published or deployed; the public and production version remains v0.9.1.
+### Fixed
+
+- Reject live feed redirects before opening a follow-up URL.
+
+The project owner reviewed the search feature locally on October 29, 2026.
+These source changes have not been published as a versioned release or
+deployed; the public and production version remains v0.9.1.
 
 ## [0.9.1] - 2026-09-11
 
