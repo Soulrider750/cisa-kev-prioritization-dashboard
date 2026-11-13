@@ -4,14 +4,14 @@ This checklist defines the review required before a version is committed,
 tagged, or published. No command in this repository automatically publishes
 the project.
 
-Current release review: v0.10.0 accepted for source publication
-Latest published release: v0.9.1
+Current release review: v0.10.0 source published; production cutover pending
+Latest published release: v0.10.0
 
-Latest published release date: 2026-09-11 (UTC)
+Latest published release date: 2026-11-13 (UTC)
 
 Sections 1 through 8 retain the completed v0.9.0 record. Section 9 records
 the completed v0.9.1 source release. Section 10 records the owner-confirmed
-production milestone. Section 11 tracks the accepted v0.10.0 source candidate
+production milestone. Section 11 records the published v0.10.0 source release
 and its separate production boundary.
 
 ## 1. Technical verification
@@ -150,15 +150,16 @@ extend the earlier candidate or release checks to establish deployed image
 identities, timer execution, health, backup freshness, or rollback acceptance.
 See [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md) for the production record.
 
-## 11. v0.10.0 catalog search and feed-redirect release preparation
+## 11. v0.10.0 catalog search and feed-redirect source release
 
-This candidate builds on the v0.9.1 source tree. On October 29, 2026, the
+This release builds on the v0.9.1 source tree. On October 29, 2026, the
 project owner confirmed that the local preview and review package pass their
 review. The search source was merged through protected pull request #16 as
 `31ed62a`. The feed-redirect guard was merged through protected pull request
 #17 as `fafc55c` on November 13 after its Python 3.11 through 3.14, CodeQL,
-and Docker checks passed. Versioned release and production promotion remain
-separate steps. The public and production version remains v0.9.1.
+and Docker checks passed. Versioned source publication and production promotion
+remain separate steps. The public source release is v0.10.0; the latest
+owner-confirmed production version is v0.9.1.
 
 - [x] Generate and validate the dashboard and search pages locally from a
   complete catalog snapshot.
@@ -193,8 +194,12 @@ separate steps. The public and production version remains v0.9.1.
 - [x] Merge the accepted candidate through protected pull request #18 as
   `f660e3b`, confirm its tree matches the reviewed head, and confirm main CI
   and CodeQL pass.
-- [ ] Tag the final publication commit as v0.10.0, publish the GitHub Release,
-  and verify the public tag, release metadata, and source archives.
+- [x] Merge protected pull request #19 as `1110757` after its Python 3.11–3.14,
+  CodeQL, and isolated Docker worker-acceptance checks passed; confirm its tree
+  matches the reviewed head and main CI and CodeQL pass.
+- [x] Tag the final publication commit as v0.10.0, publish the GitHub Release
+  on 2026-11-13, and verify the public tag, release metadata, and both source
+  archives against the tagged source.
 - [ ] Obtain separate approval before production promotion. Follow the
   private-origin, Cloudflare Tunnel, and public-hostname checks in
   [docs/OPERATIONS.md](docs/OPERATIONS.md).
@@ -202,5 +207,7 @@ separate steps. The public and production version remains v0.9.1.
 The October 29 local browser checks used Python's HTTP server. This
 workstation has no Docker or NGINX runtime. Pull request #18 ran the installed
 worker's redirect tests and the synthetic-data web-origin checks in Docker on
-a GitHub-hosted Ubuntu runner. Production image identity, backup, timer, and
+a GitHub-hosted Ubuntu runner. Pull request #19 also exercised active-release
+preservation after a simulated failed refresh inside the built worker image on
+a disposable Docker volume. Production image identity, backup, timer, and
 public tunnel checks remain part of the separately approved host cutover.

@@ -1,6 +1,6 @@
 # Publishing status
 
-This record tracks v0.10.0 source-release preparation, the verified v0.9.1
+This record tracks the published v0.10.0 source release, the verified v0.9.1
 source release, and the owner-confirmed production deployment. Publication
 dates and verification timestamps use UTC; the production milestone also
 includes its local time.
@@ -9,9 +9,7 @@ documentation updates on main do not move release tags.
 
 Status: PUBLISHED
 
-Current public release: v0.9.1
-
-Release candidate: v0.10.0 (accepted; source publication pending)
+Current public release: v0.10.0
 
 Deployment status: LIVE
 
@@ -31,11 +29,15 @@ v0.9.1 published: 2026-09-11
 
 v0.9.1 release verified: 2026-09-11
 
+v0.10.0 published: 2026-11-13
+
+v0.10.0 release verified: 2026-11-13
+
 Initial live deployment verified: 2026-09-09
 
 Last reviewed: 2026-11-13
 
-## v0.10.0 source-release preparation
+## v0.10.0 source release
 
 The candidate combines the catalog search page and the live-feed redirect
 guard, both merged to public `main`. The guard passed Python 3.11 through 3.14,
@@ -52,10 +54,19 @@ Pull request #18 merged as `f660e3bc96913676ae6298cfb55d3e843da1d49c`;
 its Git tree matches the accepted candidate head. The merged main commit
 passed its own offline verification and CodeQL workflows.
 
-The v0.10.0 source is accepted for publication but has not yet been tagged or
-released. The latest owner-confirmed production version is v0.9.1. The
-production image identities, backup freshness, timer result, and rollback
-readiness require a host check before image replacement.
+Pull request #19 added isolated, in-image acceptance for successful publication
+and preservation of the active release after a failed refresh. It passed
+Python 3.11 through 3.14, CodeQL, and Docker checks, then merged as
+`1110757ed629fa77250bd30d983e1767f16f8148`. Its Git tree matches the
+reviewed pull request head, and main-branch offline verification and CodeQL
+passed. The annotated `v0.10.0` tag points to that merge commit. The stable
+[v0.10.0 GitHub Release](https://github.com/Soulrider750/cisa-kev-prioritization-dashboard/releases/tag/v0.10.0)
+was published at 2026-11-13 19:22:34 UTC. Both downloadable source archives
+were retrieved and compared file-for-file with the tagged source (60 files).
+
+Source publication is complete. The latest owner-confirmed production version
+is v0.9.1. The production image identities, backup freshness, timer result,
+and rollback readiness require a host check before image replacement.
 
 The repository was first published on 2026-09-04 after the initial release
 passed local verification and GitHub CI across Python 3.11 through 3.14.
