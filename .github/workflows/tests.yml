@@ -64,6 +64,20 @@ jobs:
           docker build --file Dockerfile --tag kev-dashboard-refresh:ci .
           docker build --file Dockerfile.web --tag kev-dashboard-web:ci .
 
+      - name: Verify packaged worker redirect guard
+        run: |
+          docker run --rm \
+            --network none \
+            --user 10001:10001 \
+            --read-only \
+            --tmpfs /tmp:rw,noexec,nosuid,nodev,size=16m,mode=0700,uid=10001,gid=10001 \
+            --cap-drop ALL \
+            --security-opt no-new-privileges \
+            --mount "type=bind,source=${PWD}/tests,target=/tests,readonly" \
+            --entrypoint python \
+            kev-dashboard-refresh:ci \
+            -m unittest discover -s /tests -p test_fetch.py -v
+
       - name: Exercise isolated web origin
         shell: bash
         run: |

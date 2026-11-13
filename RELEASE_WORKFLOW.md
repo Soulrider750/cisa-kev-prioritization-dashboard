@@ -4,14 +4,15 @@ This checklist defines the review required before a version is committed,
 tagged, or published. No command in this repository automatically publishes
 the project.
 
-Current release review: catalog search candidate, GitHub preparation
+Current release review: v0.10.0 in progress
 Latest published release: v0.9.1
 
 Latest published release date: 2026-09-11 (UTC)
 
 Sections 1 through 8 retain the completed v0.9.0 record. Section 9 records
 the completed v0.9.1 source release. Section 10 records the owner-confirmed
-production milestone. Section 11 tracks the unreleased catalog search work.
+production milestone. Section 11 tracks the v0.10.0 catalog search and
+feed-redirect candidate.
 
 ## 1. Technical verification
 
@@ -149,14 +150,15 @@ extend the earlier candidate or release checks to establish deployed image
 identities, timer execution, health, backup freshness, or rollback acceptance.
 See [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md) for the production record.
 
-## 11. Catalog search and feed-redirect release preparation
+## 11. v0.10.0 catalog search and feed-redirect release preparation
 
 This candidate builds on the v0.9.1 source tree. On October 29, 2026, the
 project owner confirmed that the local preview and review package pass their
 review. The search source was merged through protected pull request #16 as
-`31ed62a`. The feed-redirect guard is being prepared for the same future
-versioned release. Versioned release and production promotion remain separate
-steps. The public and production version remains v0.9.1.
+`31ed62a`. The feed-redirect guard was merged through protected pull request
+#17 as `fafc55c` on November 13 after its Python 3.11 through 3.14, CodeQL,
+and Docker checks passed. Versioned release and production promotion remain
+separate steps. The public and production version remains v0.9.1.
 
 - [x] Generate and validate the dashboard and search pages locally from a
   complete catalog snapshot.
@@ -175,13 +177,15 @@ steps. The public and production version remains v0.9.1.
   for pull request #16 before changing the remote repository.
 - [x] Merge pull request #16 after its Python 3.11–3.14, CodeQL, and isolated
   Web origin (Docker) checks passed on the reviewed head.
-- [ ] Review the feed-redirect guard through a separate protected pull request
-  with current checks before including it in a versioned release.
+- [x] Review the feed-redirect guard through separate protected pull request
+  #17 with current checks before including it in a versioned release.
 - [ ] Include the live-feed redirect guard and its no-follow-up-request tests
   in the versioned candidate; verify the refresh-worker image uses that source.
-- [ ] Decide the next version before building versioned candidate images or
-  publishing a GitHub Release.
-- [ ] For a future release, verify the exact candidate in CI and isolated
+- [x] Select v0.10.0 for the new search page and redirect guard before
+  building versioned candidate images or publishing a GitHub Release.
+- [ ] Run the no-follow-up-request tests inside the built refresh-worker image
+  so the installed wheel is checked before release.
+- [ ] Verify the v0.10.0 candidate in CI and isolated
   Docker/NGINX runtime checks, including the search page, same-origin catalog
   request, Content Security Policy, and preservation of the last-known-good
   release.
