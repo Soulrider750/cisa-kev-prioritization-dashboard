@@ -10,6 +10,8 @@ Status: PUBLISHED
 
 Current public release: v0.9.1
 
+Release candidate: v0.10.0 (in preparation)
+
 Deployment status: LIVE
 
 Production version: v0.9.1 (owner-confirmed)
@@ -30,7 +32,17 @@ v0.9.1 release verified: 2026-09-11
 
 Initial live deployment verified: 2026-09-09
 
-Last reviewed: 2026-10-28
+Last reviewed: 2026-11-13
+
+## v0.10.0 candidate status
+
+The candidate combines the catalog search page and the live-feed redirect
+guard, both merged to public `main`. The guard passed Python 3.11 through 3.14,
+CodeQL, and Docker web-origin checks in pull request #17 on 2026-11-13.
+The v0.10.0 candidate has not been merged, tagged, published, or deployed.
+Its own GitHub checks and isolated image acceptance remain pending. The
+public and production release remains v0.9.1 until separately verified
+changes occur.
 
 The repository was first published on 2026-09-04 after the initial release
 passed local verification and GitHub CI across Python 3.11 through 3.14.

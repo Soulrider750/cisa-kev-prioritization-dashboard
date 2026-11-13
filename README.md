@@ -2,9 +2,10 @@
 
 A dependency-free Python application that retrieves, validates, analyzes, and visualizes the Cybersecurity and Infrastructure Security Agency's Known Exploited Vulnerabilities catalog.
 
-**Project status:** Version 0.9.1 is in production as of October 27, 2026 at
-20:38 EDT (America/New_York), equivalent to October 28, 2026 at 00:38 UTC,
-as confirmed by the project owner. See
+**Project status:** Version 0.10.0 candidate source adds the searchable
+catalog and rejects redirects from the live feed. Version 0.9.1 was confirmed
+in production on October 27, 2026 at 20:38 EDT (America/New_York), equivalent to
+October 28, 2026 at 00:38 UTC, by the project owner. See
 [PUBLISHING_STATUS.md](PUBLISHING_STATUS.md) for the deployment record and
 verification boundaries.
 
